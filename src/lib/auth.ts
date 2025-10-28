@@ -91,20 +91,6 @@ export const auth = betterAuth({
 
   // User schema (extendable)
   user: {
-    additionalFields: {
-      avatar: {
-        type: 'string',
-        required: false,
-      },
-      bio: {
-        type: 'string',
-        required: false,
-      },
-      phone: {
-        type: 'string',
-        required: false,
-      },
-    },
   },
 
   // Plugins
@@ -118,6 +104,7 @@ export const auth = betterAuth({
     // convex(),
     jwt({
       jwks: {
+        disablePrivateKeyEncryption: true,
         // remoteUrl: "api/auth/jwks",
         keyPairConfig: {
           alg: "ES256"
