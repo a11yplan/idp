@@ -50,7 +50,7 @@ export async function proxy(request: NextRequest) {
   )
 
   if (isAdminRoute) {
-    const userRole = session.user.role
+    const userRole = (session.user as any).role
 
     if (userRole !== 'admin' && userRole !== 'owner') {
       // Redirect non-admin users to home
