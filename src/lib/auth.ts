@@ -111,7 +111,8 @@ export const auth = betterAuth({
   plugins: [
     customSession(async ({ user, session }) => {
       return {
-        ...session
+        user: user,
+        session: session
       }
     }),
     // convex(),
