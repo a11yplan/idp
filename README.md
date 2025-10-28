@@ -1,5 +1,7 @@
 # Better Auth + Next.js
 
+**Identity Provider for a11yplan**
+
 A full-stack authentication system built with [Better Auth](https://www.better-auth.com), [Next.js](https://nextjs.org), and [PostgreSQL](https://www.postgresql.org/), designed for deployment on [Vercel](https://vercel.com).
 
 ## Features
