@@ -209,7 +209,7 @@ export const auth = betterAuth({
 
       // Send invitation email when user is invited to organization
       async sendInvitationEmail(data) {
-        const baseUrl = process.env.BETTER_AUTH_URL || process.env.NEXTAUTH_URL || 'http://localhost:3000'
+        const baseUrl = (process.env.BETTER_AUTH_URL || process.env.NEXTAUTH_URL || 'http://localhost:3000').trim()
         const inviteLink = `${baseUrl}/accept-invitation/${data.id}`
 
         console.log('📤 [Better Auth] Sending invitation email', {
