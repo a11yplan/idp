@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { canAccessAdmin, getUserDisplayName, isBetterAuthAdmin } from "@/lib/rbac"
 import { config } from "@/lib/config"
 import { SignOutButton } from "@/components/auth/sign-out-button"
+import { AppLogo } from "@/components/ui/app-logo"
 
 export const dynamic = 'force-dynamic'
 
@@ -37,7 +38,10 @@ export default async function Home() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
         <Card className="w-full max-w-md">
-          <CardHeader>
+          <CardHeader className="space-y-4">
+            <div className="flex justify-center">
+              <AppLogo size="md" showName />
+            </div>
             <CardTitle className="text-2xl text-center">
               {t('welcomeBack', { name: displayName })}
             </CardTitle>

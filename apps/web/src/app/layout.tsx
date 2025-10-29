@@ -2,20 +2,10 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, getLocale } from 'next-intl/server';
-import dynamic from 'next/dynamic';
 import "./globals.css";
-import { Breadcrumb } from "@/components/navigation/breadcrumb";
-import { ToasterWrapper } from "@/components/toaster-wrapper";
-import { AutumnProvider } from "autumn-js/react";
-import { OrganizationProvider } from "@/contexts/organization-context";
+import { ClientLayout } from "@/components/layout/client-layout";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { config } from "@/lib/config";
-
-// Dynamically import Navbar to ensure it only renders on client-side
-// This prevents React hooks errors during server-side rendering
-const Navbar = dynamic(() => import("@/components/navigation/navbar").then(mod => ({ default: mod.Navbar })), {
-  ssr: false,
-});
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -47,14 +37,9 @@ export default async function RootLayout({
       <body className={inter.className}>
         <ErrorBoundary>
           <NextIntlClientProvider locale={locale} messages={messages}>
-            <AutumnProvider betterAuthUrl={betterAuthUrl}>
-              <OrganizationProvider>
-                <Navbar />
-                <Breadcrumb />
-                <main>{children}</main>
-                <ToasterWrapper />
-              </OrganizationProvider>
-            </AutumnProvider>
+            <ClientLayout betterAuthUrl={betterAuthUrl}>
+              {children}
+            </ClientLayout>
           </NextIntlClientProvider>
         </ErrorBoundary>
       </body>

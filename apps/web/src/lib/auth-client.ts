@@ -9,11 +9,14 @@ import { magicLinkClient, organizationClient, adminClient } from 'better-auth/cl
  *
  * Note: Autumn billing integration is handled through <AutumnProvider>
  * wrapper in layout.tsx, not through Better Auth client plugins
+ *
+ * IMPORTANT: This baseURL must match the betterAuthUrl passed to AutumnProvider
+ * to ensure proper integration between Better Auth and Autumn.js
  */
 export const authClient = createAuthClient({
   baseURL: typeof window !== 'undefined'
     ? window.location.origin
-    : process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
+    : process.env.NEXT_PUBLIC_BETTER_AUTH_URL || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
 
   plugins: [
     magicLinkClient(),
