@@ -2,7 +2,7 @@
 
 **Identity Provider for a11yplan**
 
-A full-stack authentication system built with [Better Auth](https://www.better-auth.com), [Convex](https://convex.dev), [Next.js 15](https://nextjs.org), organized as a Bun-powered Turborepo monorepo.
+A full-stack authentication system built with [Better Auth](https://www.better-auth.com), [PostgreSQL](https://www.postgresql.org), [Next.js 15](https://nextjs.org), organized as a Bun-powered Turborepo monorepo.
 
 ## Features
 
@@ -25,8 +25,8 @@ A full-stack authentication system built with [Better Auth](https://www.better-a
 🚀 **Technology Stack**
 - **Frontend**: Next.js 15 (App Router), React 19, TypeScript
 - **UI**: shadcn/ui, Tailwind CSS, Radix UI
-- **Authentication**: Better Auth with Convex adapter
-- **Backend**: Convex (realtime database)
+- **Authentication**: Better Auth
+- **Database**: PostgreSQL (Vercel Postgres, Neon, or any PostgreSQL)
 - **Email**: Resend with React Email templates
 - **Deployment**: Vercel
 - **Package Manager**: Bun
@@ -73,21 +73,22 @@ cp .env.example .env.local
 Edit `.env.local` with your configuration:
 
 ```env
+# Database (PostgreSQL)
+DATABASE_URL=postgresql://user:password@localhost:5432/dbname
+
 # Better Auth
 BETTER_AUTH_SECRET=your-random-secret-min-32-characters
 BETTER_AUTH_URL=http://localhost:3810
-
-# Convex
-CONVEX_DEPLOYMENT=your-convex-deployment
-NEXT_PUBLIC_CONVEX_URL=https://your-project.convex.cloud
+NEXT_PUBLIC_BETTER_AUTH_URL=http://localhost:3810
 
 # Email (Resend)
 RESEND_API_KEY=re_your_api_key
-RESEND_FROM_EMAIL=noreply@yourdomain.com
+EMAIL_FROM=noreply@yourdomain.com
+EMAIL_FROM_NAME=a11yplan IDP
 
 # App
-NEXT_PUBLIC_APP_URL=http://localhost:3810
-EMAIL_LOCALE=en  # or 'de' for German
+NEXT_PUBLIC_SITE_URL=http://localhost:3810
+NEXT_PUBLIC_DEFAULT_LOCALE=en  # or 'de' for German
 ```
 
 Generate a secret:
@@ -95,17 +96,16 @@ Generate a secret:
 openssl rand -base64 32
 ```
 
-### 3. Setup Convex
+### 3. Setup Database
+
+Run Better Auth migrations to create required tables:
 
 ```bash
 cd apps/web
-bunx convex dev
+bunx @better-auth/cli migrate
 ```
 
-This will:
-- Create a new Convex project (first time)
-- Generate schema and deploy functions
-- Start Convex development server
+This will create the necessary database tables in your PostgreSQL database.
 
 ### 4. Start Development Server
 
@@ -243,15 +243,16 @@ git push -u origin main
 
 ### 3. Configure Environment Variables
 
-Add these in Vercel dashboard:
+Add these in Vercel dashboard (see VERCEL_SETUP.md for details):
+- `DATABASE_URL` (Vercel Postgres or Neon)
 - `BETTER_AUTH_SECRET`
 - `BETTER_AUTH_URL` (your Vercel URL)
-- `CONVEX_DEPLOYMENT`
-- `NEXT_PUBLIC_CONVEX_URL`
+- `NEXT_PUBLIC_BETTER_AUTH_URL` (your Vercel URL)
+- `NEXT_PUBLIC_SITE_URL` (your Vercel URL)
 - `RESEND_API_KEY`
-- `RESEND_FROM_EMAIL`
-- `NEXT_PUBLIC_APP_URL` (your Vercel URL)
-- `EMAIL_LOCALE`
+- `EMAIL_FROM`
+- `EMAIL_FROM_NAME`
+- Optional: Feature flags and branding variables
 
 ### 4. Deploy
 
@@ -288,14 +289,30 @@ All email templates are automatically used via the `@repo/emails` workspace pack
 - ✅ Turborepo Monorepo
 - ✅ Shared Email Templates
 
+## Database Options
+
+### Vercel Postgres (Recommended for Vercel deployments)
+1. In Vercel dashboard: Storage → Create → Postgres
+2. Copy the connection string to `DATABASE_URL`
+
+### Neon (Serverless PostgreSQL)
+1. Sign up at [neon.tech](https://neon.tech)
+2. Create a project and get the connection string
+3. Add to `DATABASE_URL` environment variable
+
+### Any PostgreSQL Provider
+Use any PostgreSQL database provider. Just set the `DATABASE_URL` environment variable with your connection string.
+
 ## Resources
 
 - [Better Auth Documentation](https://www.better-auth.com/docs)
-- [Convex Documentation](https://docs.convex.dev)
+- [PostgreSQL Documentation](https://www.postgresql.org/docs/)
 - [Next.js Documentation](https://nextjs.org/docs)
 - [Turborepo Documentation](https://turbo.build/repo/docs)
 - [shadcn/ui](https://ui.shadcn.com)
 - [Vercel Deployment](https://vercel.com/docs)
+- [Vercel Postgres](https://vercel.com/docs/storage/vercel-postgres)
+- [Neon PostgreSQL](https://neon.tech/docs/introduction)
 
 ## License
 

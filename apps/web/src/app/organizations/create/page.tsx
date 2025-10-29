@@ -1,8 +1,8 @@
 "use client"
 
-
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { useTranslations } from "next-intl"
 import { organization } from "@/lib/auth-client"
 import { BackButton } from "@/components/navigation/back-button"
 import { Button } from "@/components/ui/button"
@@ -11,11 +11,12 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { BetterAuthLogger } from "@/lib/debug-logger"
 
 
 export const dynamic = 'force-dynamic'
 export default function CreateOrganizationPage() {
+  const t = useTranslations('organizations')
+  const tCommon = useTranslations('common')
   const router = useRouter()
   const [name, setName] = useState("")
   const [slug, setSlug] = useState("")
@@ -43,8 +44,6 @@ export default function CreateOrganizationPage() {
     setLoading(true)
     setError("")
 
-    console.log('🏢 [Organization Create] Creating organization:', { name, slug, description })
-
     try {
       const result = await organization.create({
         name,
@@ -52,40 +51,15 @@ export default function CreateOrganizationPage() {
         metadata: description ? { description } : undefined,
       })
 
-      console.log('🏢 [Organization Create] Create result:', result)
-
       if (result.error) {
-        console.error('❌ [Organization Create] Failed to create organization:', result.error)
-        BetterAuthLogger.org.error('create', result.error)
-        setError(result.error.message || "Failed to create organization")
+        setError(result.error.message || tCommon('error'))
       } else if (result.data) {
         const orgData = result.data as any
-
-        console.log('✅ [Organization Create] Organization created successfully:', {
-          id: orgData.id,
-          name: orgData.name,
-          slug: orgData.slug,
-          // The role should be included in the response
-          role: orgData.role,
-        })
-
-        BetterAuthLogger.org.created(
-          orgData.id,
-          orgData.name,
-          orgData.role || 'owner' // Should be 'owner' by default
-        )
-
-        // Log a reminder for debugging
-        console.log('💡 [Organization Create] Expected role: "owner" (as creator)')
-        console.log('💡 [Organization Create] Check server logs for "🎉 [Better Auth] Organization created"')
-
         router.push(`/organizations/${orgData.id}`)
         router.refresh()
       }
     } catch (err: any) {
-      console.error('❌ [Organization Create] Exception during creation:', err)
-      BetterAuthLogger.org.error('create', err)
-      setError(err.message || "An error occurred")
+      setError(err.message || tCommon('error'))
     } finally {
       setLoading(false)
     }
@@ -97,21 +71,21 @@ export default function CreateOrganizationPage() {
         <BackButton href="/organizations" />
 
         <div>
-          <h1 className="text-3xl font-bold">Create Organization</h1>
-          <p className="text-muted-foreground">Set up a new team or workspace</p>
+          <h1 className="text-3xl font-bold">{t('create')}</h1>
+          <p className="text-muted-foreground">{t('createDescription')}</p>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>Organization Details</CardTitle>
+            <CardTitle>{t('organizationName')}</CardTitle>
             <CardDescription>
-              Enter the information for your new organization
+              {t('createDescription')}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Organization Name *</Label>
+                <Label htmlFor="name">{t('organizationName')} *</Label>
                 <Input
                   id="name"
                   value={name}
@@ -137,12 +111,12 @@ export default function CreateOrganizationPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="description">Description</Label>
+                <Label htmlFor="description">{t('organizationDescription')}</Label>
                 <Textarea
                   id="description"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Brief description of your organization"
+                  placeholder={t('organizationDescription')}
                   rows={3}
                 />
               </div>
@@ -154,7 +128,7 @@ export default function CreateOrganizationPage() {
               )}
 
               <Button type="submit" disabled={loading}>
-                {loading ? "Creating..." : "Create Organization"}
+                {loading ? tCommon('loading') : t('create')}
               </Button>
             </form>
           </CardContent>

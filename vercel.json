@@ -4,5 +4,11 @@
   "installCommand": "bun install",
   "outputDirectory": "apps/web/.next",
   "framework": "nextjs",
-  "regions": ["iad1"]
+  "regions": ["fra1"],
+  "git": {
+    "deploymentEnabled": {
+      "main": true
+    }
+  },
+  "crons": []
 }
