@@ -121,7 +121,7 @@ export default function OrganizationsPage() {
                         </div>
                       )}
                       <div className="flex justify-between">
-                        <span className="text-muted-foreground">{t('organizationCreated').split(' ')[0]}</span>
+                        <span className="text-muted-foreground">{t('created')}</span>
                         <span className="font-medium">
                           {new Date(org.createdAt).toLocaleDateString()}
                         </span>

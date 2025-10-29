@@ -106,6 +106,7 @@
     "owner": "Owner",
     "admin": "Admin",
     "member": "Member",
+    "created": "Created",
     "inviteSent": "Invitation sent successfully",
     "memberRemoved": "Member removed successfully",
     "organizationCreated": "Organization created successfully",

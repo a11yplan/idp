@@ -106,6 +106,7 @@
     "owner": "Eigentümer",
     "admin": "Administrator",
     "member": "Mitglied",
+    "created": "Erstellt",
     "inviteSent": "Einladung erfolgreich gesendet",
     "memberRemoved": "Mitglied erfolgreich entfernt",
     "organizationCreated": "Organisation erfolgreich erstellt",
