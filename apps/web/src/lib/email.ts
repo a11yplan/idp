@@ -44,6 +44,22 @@ function getResendClient(): Resend | null {
 }
 
 /**
+ * Get formatted email sender address
+ * Combines EMAIL_FROM and EMAIL_FROM_NAME if both are set
+ */
+function getFromEmail(): string {
+  const email = process.env.EMAIL_FROM || 'noreply@example.com'
+  const name = process.env.EMAIL_FROM_NAME
+
+  // If name is provided, format as "Name <email@domain.com>"
+  if (name && name.trim()) {
+    return `${name} <${email}>`
+  }
+
+  return email
+}
+
+/**
  * Send email verification
  */
 export async function sendVerificationEmail(params: {
@@ -53,7 +69,7 @@ export async function sendVerificationEmail(params: {
 }): Promise<{ success: boolean; error?: string }> {
   const { email, url } = params
   const resend = getResendClient()
-  const fromEmail = process.env.RESEND_FROM_EMAIL || 'noreply@example.com'
+  const fromEmail = getFromEmail()
   const locale = getLocale()
 
   // Development mode fallback
@@ -104,7 +120,7 @@ export async function sendMagicLinkEmail(params: {
 }): Promise<{ success: boolean; error?: string }> {
   const { email, url, token } = params
   const resend = getResendClient()
-  const fromEmail = process.env.RESEND_FROM_EMAIL || 'noreply@example.com'
+  const fromEmail = getFromEmail()
   const locale = getLocale()
   const siteUrl = getSiteUrl()
 
@@ -163,7 +179,7 @@ export async function sendPasswordResetEmail(params: {
 }): Promise<{ success: boolean; error?: string }> {
   const { email, url, token } = params
   const resend = getResendClient()
-  const fromEmail = process.env.RESEND_FROM_EMAIL || 'noreply@example.com'
+  const fromEmail = getFromEmail()
   const locale = getLocale()
   const siteUrl = getSiteUrl()
 
@@ -224,7 +240,7 @@ export async function sendOrganizationInvitationEmail(params: {
 }): Promise<{ success: boolean; error?: string }> {
   const { email, organizationName, inviteLink, role = 'member' } = params
   const resend = getResendClient()
-  const fromEmail = process.env.RESEND_FROM_EMAIL || 'noreply@example.com'
+  const fromEmail = getFromEmail()
   const locale = getLocale()
 
   // Development mode fallback
@@ -281,7 +297,7 @@ export async function sendEmailChangeEmail(params: {
 }): Promise<{ success: boolean; error?: string }> {
   const { email, url, token } = params
   const resend = getResendClient()
-  const fromEmail = process.env.RESEND_FROM_EMAIL || 'noreply@example.com'
+  const fromEmail = getFromEmail()
   const locale = getLocale()
   const siteUrl = getSiteUrl()
 

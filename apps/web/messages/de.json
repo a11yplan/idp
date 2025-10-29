@@ -13,7 +13,14 @@
     "success": "Erfolgreich",
     "close": "Schließen",
     "search": "Suchen",
-    "filter": "Filtern"
+    "filter": "Filtern",
+    "status": "Status",
+    "actions": "Aktionen",
+    "active": "Aktiv",
+    "banned": "Gesperrt",
+    "verified": "Verifiziert",
+    "notVerified": "Nicht verifiziert",
+    "name": "Name"
   },
   "nav": {
     "home": "Startseite",
@@ -134,7 +141,13 @@
     "deleteUser": "Benutzer löschen",
     "userBanned": "Benutzer erfolgreich gesperrt",
     "userUnbanned": "Benutzer erfolgreich entsperrt",
-    "noPermission": "Sie haben keine Berechtigung für das Admin-Panel"
+    "userDeleted": "Benutzer erfolgreich gelöscht",
+    "noPermission": "Sie haben keine Berechtigung für das Admin-Panel",
+    "searchUsers": "Benutzer suchen...",
+    "filterByRole": "Nach Rolle filtern",
+    "filterByStatus": "Nach Status filtern",
+    "allRoles": "Alle Rollen",
+    "allStatus": "Alle Status"
   },
   "billing": {
     "title": "Abrechnung",

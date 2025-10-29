@@ -13,7 +13,14 @@
     "success": "Success",
     "close": "Close",
     "search": "Search",
-    "filter": "Filter"
+    "filter": "Filter",
+    "status": "Status",
+    "actions": "Actions",
+    "active": "Active",
+    "banned": "Banned",
+    "verified": "Verified",
+    "notVerified": "Not Verified",
+    "name": "Name"
   },
   "nav": {
     "home": "Home",
@@ -134,7 +141,13 @@
     "deleteUser": "Delete User",
     "userBanned": "User banned successfully",
     "userUnbanned": "User unbanned successfully",
-    "noPermission": "You don't have permission to access the admin panel"
+    "userDeleted": "User deleted successfully",
+    "noPermission": "You don't have permission to access the admin panel",
+    "searchUsers": "Search users...",
+    "filterByRole": "Filter by role",
+    "filterByStatus": "Filter by status",
+    "allRoles": "All Roles",
+    "allStatus": "All Status"
   },
   "billing": {
     "title": "Billing",

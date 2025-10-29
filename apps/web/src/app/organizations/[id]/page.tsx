@@ -1,8 +1,8 @@
 "use client"
 
-
 import { useEffect, useState } from "react"
 import { organization } from "@/lib/auth-client"
+import { useTranslations } from "next-intl"
 import Link from "next/link"
 import { useParams } from "next/navigation"
 import { BackButton } from "@/components/navigation/back-button"
@@ -23,6 +23,8 @@ interface OrganizationDetail {
 }
 
 export default function OrganizationDetailPage() {
+  const t = useTranslations('organizations')
+  const tCommon = useTranslations('common')
   const params = useParams()
   const orgId = params.id as string
 
@@ -52,7 +54,7 @@ export default function OrganizationDetailPage() {
           }
         }
       } catch (error) {
-        console.error("Failed to fetch organization:", error)
+        // Error handled silently - user will see not found state
       } finally {
         setLoading(false)
       }
@@ -79,7 +81,7 @@ export default function OrganizationDetailPage() {
           <BackButton href="/organizations" />
           <Card className="mt-6">
             <CardContent className="py-12 text-center">
-              <p className="text-muted-foreground">Organization not found</p>
+              <p className="text-muted-foreground">{t('noOrganizations')}</p>
             </CardContent>
           </Card>
         </div>
@@ -98,37 +100,37 @@ export default function OrganizationDetailPage() {
           <div>
             <div className="flex items-center gap-3 mb-2">
               <h1 className="text-3xl font-bold">{org.name}</h1>
-              <Badge>{userRole}</Badge>
+              <Badge>{t(userRole as 'owner' | 'admin' | 'member')}</Badge>
             </div>
             <p className="text-muted-foreground">@{org.slug}</p>
           </div>
           {isOwnerOrAdmin && (
             <Link href={`/organizations/${orgId}/settings`}>
-              <Button variant="outline">Settings</Button>
+              <Button variant="outline">{t('settings')}</Button>
             </Link>
           )}
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>Overview</CardTitle>
-            <CardDescription>Organization information and statistics</CardDescription>
+            <CardTitle>{t('title')}</CardTitle>
+            <CardDescription>{t('myOrganizations')}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {org.metadata?.description && (
               <div>
-                <h3 className="text-sm font-medium text-muted-foreground mb-1">Description</h3>
+                <h3 className="text-sm font-medium text-muted-foreground mb-1">{t('organizationDescription')}</h3>
                 <p className="text-sm">{org.metadata.description}</p>
               </div>
             )}
 
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
-                <h3 className="text-sm font-medium text-muted-foreground mb-1">Members</h3>
+                <h3 className="text-sm font-medium text-muted-foreground mb-1">{t('members')}</h3>
                 <p className="text-2xl font-bold">{org.members?.length || 0}</p>
               </div>
               <div>
-                <h3 className="text-sm font-medium text-muted-foreground mb-1">Created</h3>
+                <h3 className="text-sm font-medium text-muted-foreground mb-1">{t('created')}</h3>
                 <p className="text-sm">{new Date(org.createdAt).toLocaleDateString()}</p>
               </div>
             </div>
@@ -140,9 +142,9 @@ export default function OrganizationDetailPage() {
             <Card className="hover:bg-muted/50 transition-colors cursor-pointer h-full">
               <CardContent className="flex items-center p-6">
                 <div className="flex-1">
-                  <p className="font-medium">Members</p>
+                  <p className="font-medium">{t('members')}</p>
                   <p className="text-xs text-muted-foreground">
-                    Manage team members and roles
+                    {t('manageMembers')}
                   </p>
                 </div>
               </CardContent>
@@ -154,9 +156,9 @@ export default function OrganizationDetailPage() {
               <Card className="hover:bg-muted/50 transition-colors cursor-pointer h-full">
                 <CardContent className="flex items-center p-6">
                   <div className="flex-1">
-                    <p className="font-medium">Settings</p>
+                    <p className="font-medium">{t('settings')}</p>
                     <p className="text-xs text-muted-foreground">
-                      Configure organization settings
+                      {t('organizationDescription')}
                     </p>
                   </div>
                 </CardContent>

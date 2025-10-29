@@ -67,7 +67,7 @@ Add these environment variables in your Vercel project settings (**Settings → 
 | `NEXT_PUBLIC_SITE_URL` | `https://your-app.vercel.app` | Same as BETTER_AUTH_URL |
 | `RESEND_API_KEY` | `re_...` | From resend.com |
 | `EMAIL_FROM` | `noreply@yourdomain.com` | Must be verified in Resend |
-| `EMAIL_FROM_NAME` | `a11yplan IDP` | Display name for emails |
+| `EMAIL_FROM_NAME` | `a11yplan IDP` | (Optional) Display name for emails |
 
 ### Optional Branding Variables
 
@@ -292,6 +292,27 @@ Consider integrating error tracking:
 - Sentry
 - LogRocket
 - Vercel Analytics (built-in)
+
+## Email Configuration Notes
+
+### Sender Email Format
+
+The application supports two environment variables for email configuration:
+
+- `EMAIL_FROM`: The sender email address (required)
+- `EMAIL_FROM_NAME`: Display name for the sender (optional)
+
+**If both are provided**, emails will be sent with the format: `"Display Name <email@domain.com>"`
+
+**If only EMAIL_FROM is provided**, emails will be sent from: `email@domain.com`
+
+**Example**:
+```env
+EMAIL_FROM=noreply@a11yplan.com
+EMAIL_FROM_NAME=a11yplan Identity Provider
+```
+
+This will send emails from: `"a11yplan Identity Provider <noreply@a11yplan.com>"`
 
 ## Support
 
