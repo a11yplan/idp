@@ -56,8 +56,23 @@ export default function AcceptInvitationPage() {
 
       if (invitationResult.data) {
         const invitation = invitationResult.data as any
-        setOrganizationName(invitation.organization?.name || 'Unknown Organization')
-        setOrganizationId(invitation.organizationId)
+        const orgId = invitation.organizationId
+        setOrganizationId(orgId)
+
+        // Fetch full organization details to get the name
+        if (orgId) {
+          const orgResult = await authClient.organization.getFullOrganization({
+            query: {
+              organizationId: orgId,
+            },
+          })
+
+          if (orgResult.data) {
+            const org = orgResult.data as any
+            setOrganizationName(org.name || 'Unknown Organization')
+            console.log('📧 [Accept Invitation] Organization name:', org.name)
+          }
+        }
       }
 
       // Accept the invitation

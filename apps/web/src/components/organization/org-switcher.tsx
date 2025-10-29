@@ -1,7 +1,5 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { authClient } from "@/lib/auth-client"
 import {
   Select,
   SelectContent,
@@ -9,55 +7,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Building2, Plus } from "lucide-react"
+import { Building2, Plus, Users, Check } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
-
-interface Organization {
-  id: string
-  name: string
-  slug: string
-  role: string
-}
-
-const ACTIVE_ORG_KEY = "activeOrganizationId"
+import { useOrganization } from "@/contexts/organization-context"
+import { useTeam } from "@/contexts/team-context"
+import { cn } from "@/lib/utils"
 
 export function OrganizationSwitcher() {
   const router = useRouter()
-  const [organizations, setOrganizations] = useState<Organization[]>([])
-  const [activeOrgId, setActiveOrgId] = useState<string>("")
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    fetchOrganizations()
-  }, [])
-
-  const fetchOrganizations = async () => {
-    try {
-      const result = await authClient.organization.list()
-      if (result.data) {
-        const orgs = result.data as any[]
-        setOrganizations(orgs)
-
-        // Get active organization from localStorage (client-side storage)
-        const savedActiveOrgId = localStorage.getItem(ACTIVE_ORG_KEY)
-
-        if (savedActiveOrgId && orgs.some(org => org.id === savedActiveOrgId)) {
-          setActiveOrgId(savedActiveOrgId)
-        } else if (orgs.length > 0) {
-          // Default to first organization if no saved active org
-          const firstOrg = orgs[0]
-          setActiveOrgId(firstOrg.id)
-          localStorage.setItem(ACTIVE_ORG_KEY, firstOrg.id)
-        }
-      }
-    } catch (error) {
-      console.error("Failed to fetch organizations:", error)
-    } finally {
-      setLoading(false)
-    }
-  }
+  const { activeOrganization, organizations, setActiveOrganization, isLoading } = useOrganization()
+  const { teams, activeTeam, setActiveTeam, isLoading: teamsLoading } = useTeam()
 
   const handleSwitch = async (orgId: string) => {
     if (orgId === "create") {
@@ -65,23 +26,22 @@ export function OrganizationSwitcher() {
       return
     }
 
+    const selectedOrg = organizations.find((org) => org.id === orgId)
+    if (selectedOrg) {
+      await setActiveOrganization(selectedOrg)
+    }
+  }
+
+  const handleTeamSelect = async (team: any) => {
     try {
-      // Save to localStorage (client-side for immediate UI update)
-      localStorage.setItem(ACTIVE_ORG_KEY, orgId)
-      setActiveOrgId(orgId)
-
-      // Sync with server-side session
-      await authClient.organization.setActive({ organizationId: orgId })
-
-      // Refresh the page to update organization context
-      router.refresh()
-    } catch (error: any) {
-      console.error("Failed to switch organization:", error)
+      await setActiveTeam(team)
+    } catch (error) {
+      console.error("Failed to switch team:", error)
     }
   }
 
   // Don't show if loading or no organizations
-  if (loading) {
+  if (isLoading) {
     return null
   }
 
@@ -96,17 +56,23 @@ export function OrganizationSwitcher() {
     )
   }
 
-  const activeOrg = organizations.find((org) => org.id === activeOrgId)
-
   return (
     <div className="flex items-center gap-2">
-      <Select value={activeOrgId} onValueChange={handleSwitch}>
+      <Select value={activeOrganization?.id || ""} onValueChange={handleSwitch}>
         <SelectTrigger className="w-[200px]">
           <div className="flex items-center gap-2">
             <Building2 className="h-4 w-4" />
             <SelectValue>
-              {activeOrg ? (
-                <span className="truncate">{activeOrg.name}</span>
+              {activeOrganization ? (
+                <div className="flex flex-col items-start">
+                  <span className="truncate text-sm">{activeOrganization.name}</span>
+                  {activeTeam && (
+                    <span className="text-xs text-muted-foreground flex items-center gap-1">
+                      <Users className="h-3 w-3" />
+                      {activeTeam.name}
+                    </span>
+                  )}
+                </div>
               ) : (
                 "Select organization"
               )}
@@ -124,6 +90,46 @@ export function OrganizationSwitcher() {
               </div>
             </SelectItem>
           ))}
+
+          {/* Team Selection Section */}
+          {activeOrganization && teams.length > 0 && (
+            <div className="border-t mt-2 pt-2">
+              <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground flex items-center gap-2">
+                <Users className="h-3 w-3" />
+                Teams
+              </div>
+              <div className="space-y-1">
+                {teams.map((team) => (
+                  <button
+                    key={team.id}
+                    onClick={() => handleTeamSelect(team)}
+                    className={cn(
+                      "w-full px-2 py-1.5 text-sm rounded-sm hover:bg-accent hover:text-accent-foreground flex items-center justify-between",
+                      activeTeam?.id === team.id && "bg-accent"
+                    )}
+                  >
+                    <span className="truncate">{team.name}</span>
+                    {activeTeam?.id === team.id && (
+                      <Check className="h-4 w-4 ml-2" />
+                    )}
+                  </button>
+                ))}
+              </div>
+              <div className="mt-2">
+                <Link href={`/organizations/${activeOrganization.id}/teams`}>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="w-full justify-start"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Manage Teams
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          )}
+
           <div className="border-t mt-2 pt-2">
             <Link href="/organizations/create">
               <Button

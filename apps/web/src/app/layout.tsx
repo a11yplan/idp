@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, getLocale } from 'next-intl/server';
 import "./globals.css";
 import { ClientLayout } from "@/components/layout/client-layout";
 import { ErrorBoundary } from "@/components/error-boundary";
+import { IntlErrorHandlerProvider } from "@/components/providers/intl-error-handler-provider";
 import { config } from "@/lib/config";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -36,11 +36,11 @@ export default async function RootLayout({
       </head>
       <body className={inter.className}>
         <ErrorBoundary>
-          <NextIntlClientProvider locale={locale} messages={messages}>
+          <IntlErrorHandlerProvider locale={locale} messages={messages}>
             <ClientLayout betterAuthUrl={betterAuthUrl}>
               {children}
             </ClientLayout>
-          </NextIntlClientProvider>
+          </IntlErrorHandlerProvider>
         </ErrorBoundary>
       </body>
     </html>

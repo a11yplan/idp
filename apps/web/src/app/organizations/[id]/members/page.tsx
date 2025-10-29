@@ -208,7 +208,7 @@ export default function OrganizationMembersPage() {
     }
 
     fetchMembers()
-  }, [orgId])
+  }, [orgId, session?.user?.id])
 
   const handleInviteMember = async () => {
     setInviteLoading(true)

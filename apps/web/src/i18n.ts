@@ -1,4 +1,5 @@
 import { getRequestConfig } from 'next-intl/server'
+import { IntlErrorCode } from 'next-intl'
 import { headers } from 'next/headers'
 
 // Can be imported from a shared config
@@ -17,5 +18,17 @@ export default getRequestConfig(async ({ requestLocale }) => {
   return {
     locale,
     messages: (await import(`../messages/${locale}.json`)).default,
+    onError(error) {
+      // Silently ignore missing translation errors
+      if (error.code === IntlErrorCode.MISSING_MESSAGE) {
+        return
+      }
+      // Log other errors (potential bugs)
+      console.error(error)
+    },
+    getMessageFallback({ namespace, key }) {
+      const path = [namespace, key].filter((part) => part != null).join('.')
+      return path
+    },
   }
 })

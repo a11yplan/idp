@@ -57,6 +57,7 @@ export function Navbar() {
     if (item.href === '/organizations' && !config.features.organizations) return false
     if (item.href === '/admin' && !config.features.adminPanel) return false
     if (item.href === '/billing' && !config.features.billing) return false
+    if (item.href === '/pricing' && !config.features.billing) return false
     if (item.href === '/invitations' && !config.features.invitations) return false
 
     return true

@@ -96,9 +96,64 @@ export const auth = betterAuth({
   // Plugins
   plugins: [
     customSession(async ({ user, session }) => {
+
+      let activeOrganization = null
+      let activeTeam = null
+
+
+
+      // Fetch active organization details if set
+      if (session.activeOrganizationId) {
+        try {
+          const result = await pool.query(
+            'SELECT id, name, slug, logo FROM organization WHERE id = $1',
+            [session.activeOrganizationId]
+          )
+
+          if (result.rows[0]) {
+            const org = result.rows[0]
+            activeOrganization = {
+              id: org.id,
+              name: org.name,
+              slug: org.slug,
+              logo: org.logo,
+            }
+          }
+        } catch (error) {
+          console.error('Failed to fetch active organization:', error)
+        }
+      }
+
+
+      // Fetch active team details if set
+      if (session.activeTeamId) {
+        try {
+          const result = await pool.query(
+            'SELECT id, name, "organizationId" FROM team WHERE id = $1',
+            [session.activeTeamId]
+          )
+
+          if (result.rows[0]) {
+            const team = result.rows[0]
+            activeTeam = {
+              id: team.id,
+              name: team.name,
+              organizationId: team.organizationId,
+            }
+          }
+        } catch (error) {
+          console.error('Failed to fetch active team:', error)
+        }
+      }
+
+
       return {
         user: user,
-        session: session
+        session: {
+          ...session,
+          activeOrganization,
+          activeTeam,
+        }
       }
     }),
     // convex(),
@@ -124,7 +179,7 @@ export const auth = betterAuth({
           token,
         })
       },
-      expiresIn: 60 * 10, // 10 minutes
+      expiresIn: 60 * 60, // 10 minutes
     }),
     organization({
       // Organization configuration

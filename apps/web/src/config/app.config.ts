@@ -64,7 +64,7 @@ export const defaultConfig: AppConfig = {
   features: {
     organizations: true,
     adminPanel: true,
-    billing: true,
+    billing: false,
     invitations: true,
   },
 

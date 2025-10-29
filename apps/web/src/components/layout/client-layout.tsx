@@ -2,9 +2,11 @@
 
 import { AutumnProvider } from "autumn-js/react"
 import { OrganizationProvider } from "@/contexts/organization-context"
+import { TeamProvider } from "@/contexts/team-context"
 import { Navbar } from "@/components/navigation/navbar"
 import { Breadcrumb } from "@/components/navigation/breadcrumb"
 import { ToasterWrapper } from "@/components/toaster-wrapper"
+import { config } from "@/lib/config"
 
 interface ClientLayoutProps {
   children: React.ReactNode
@@ -12,14 +14,25 @@ interface ClientLayoutProps {
 }
 
 export function ClientLayout({ children, betterAuthUrl }: ClientLayoutProps) {
-  return (
-    <AutumnProvider betterAuthUrl={betterAuthUrl}>
-      <OrganizationProvider>
+  const content = (
+    <OrganizationProvider>
+      <TeamProvider>
         <Navbar />
         <Breadcrumb />
         <main>{children}</main>
         <ToasterWrapper />
-      </OrganizationProvider>
-    </AutumnProvider>
+      </TeamProvider>
+    </OrganizationProvider>
   )
+
+  // Only wrap with AutumnProvider if billing is enabled
+  // if (config.features.billing) {
+  //   return (
+  //     <AutumnProvider betterAuthUrl={betterAuthUrl}>
+  //       {content}
+  //     </AutumnProvider>
+  //   )
+  // }
+
+  return content
 }
