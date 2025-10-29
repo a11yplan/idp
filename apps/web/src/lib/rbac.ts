@@ -9,7 +9,7 @@ export type UserRole = 'owner' | 'admin' | 'member' | 'user'
 export interface User {
   id: string
   email: string
-  role?: UserRole
+  role?: string | null
   [key: string]: any
 }
 
@@ -32,11 +32,11 @@ export function isOwner(user?: User | null): boolean {
 /**
  * Check if user has specific role
  */
-export function hasRole(user?: User | null, roles: UserRole | UserRole[]): boolean {
+export function hasRole(user: User | null | undefined, roles: UserRole | UserRole[]): boolean {
   if (!user || !user.role) return false
 
   if (Array.isArray(roles)) {
-    return roles.includes(user.role)
+    return roles.includes(user.role as UserRole)
   }
 
   return user.role === roles

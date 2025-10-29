@@ -46,7 +46,9 @@ export default function AcceptInvitationPage() {
     try {
       // First, get invitation details to show organization name
       const invitationResult = await organization.getInvitation({
-        id: invitationId,
+        query: {
+          id: invitationId,
+        },
       })
 
       console.log('📧 [Accept Invitation] Invitation details:', invitationResult)
