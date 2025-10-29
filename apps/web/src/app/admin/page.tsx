@@ -1,71 +1,35 @@
-"use client"
-
-import { useEffect, useState } from "react"
-import { useSession, admin } from "@/lib/auth-client"
+import { headers } from "next/headers"
+import { redirect } from "next/navigation"
+import { auth } from "@/lib/auth"
 import { useTranslations } from "next-intl"
 import Link from "next/link"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
-import { Alert, AlertDescription } from "@/components/ui/alert"
 import { canAccessAdmin } from "@/lib/rbac"
 
 export const dynamic = 'force-dynamic'
 
-export default function AdminDashboardPage() {
+export default async function AdminDashboardPage() {
+  // Server-side authentication and authorization check
+  const session = await auth.api.getSession({
+    headers: await headers()
+  })
+
+  // Redirect if not authenticated or not admin
+  if (!session || !canAccessAdmin(session.user)) {
+    redirect('/')
+  }
+
+  // Fetch admin stats server-side
+  let userCount = 0
+  try {
+    const usersResult = await auth.api.listUsers()
+    userCount = usersResult?.users?.length || 0
+  } catch (error) {
+    console.error('[Admin Dashboard] Failed to fetch user count:', error)
+    // Continue with 0 count on error
+  }
+
   const t = useTranslations('admin')
-  const { data: session, isPending } = useSession()
-  const [stats, setStats] = useState({ users: 0 })
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const usersResult = await admin.listUsers({ query: {} })
-        setStats({
-          users: usersResult.data?.users?.length || 0,
-        })
-      } catch (error) {
-        // Error handled silently - user will see 0 count
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    if (session?.user) {
-      fetchStats()
-    }
-  }, [session])
-
-  if (isPending || loading) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="container mx-auto px-4 py-8 max-w-6xl space-y-6">
-          <Skeleton className="h-12 w-64" />
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <Skeleton className="h-32" />
-            <Skeleton className="h-32" />
-            <Skeleton className="h-32" />
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  const isAdmin = canAccessAdmin(session?.user)
-
-  if (!isAdmin) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="container mx-auto px-4 py-8 max-w-6xl">
-          <Alert variant="destructive">
-            <AlertDescription>
-              {t('noPermission')}
-            </AlertDescription>
-          </Alert>
-        </div>
-      </div>
-    )
-  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -82,7 +46,7 @@ export default function AdminDashboardPage() {
               <CardDescription>{t('registeredUsers')}</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold">{stats.users}</p>
+              <p className="text-3xl font-bold">{userCount}</p>
             </CardContent>
           </Card>
 

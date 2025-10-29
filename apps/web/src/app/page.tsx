@@ -1,38 +1,31 @@
-"use client"
-
 import Link from "next/link"
 import { useTranslations } from "next-intl"
-import { signOut, useSession } from "@/lib/auth-client"
+import { headers } from "next/headers"
+import { redirect } from "next/navigation"
+import { auth } from "@/lib/auth"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Skeleton } from "@/components/ui/skeleton"
 import { canAccessAdmin, getUserDisplayName, isBetterAuthAdmin } from "@/lib/rbac"
 import { config } from "@/lib/config"
+import { SignOutButton } from "@/components/auth/sign-out-button"
 
 export const dynamic = 'force-dynamic'
 
-export default function Home() {
+export default async function Home() {
+  // Server-side session validation (secure)
+  const session = await auth.api.getSession({
+    headers: await headers()
+  })
+
+  // Redirect to login if not authenticated
+  // This provides secure server-side validation in addition to middleware check
+  if (!session) {
+    redirect('/login')
+  }
+
   const t = useTranslations('home')
   const tCommon = useTranslations('common')
   const tAuth = useTranslations('auth')
-  const { data: session, isPending: isLoading } = useSession()
-
-  if (isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
-        <div className="w-full max-w-3xl space-y-4 p-4">
-          <Skeleton className="h-12 w-3/4" />
-          <Skeleton className="h-64 w-full" />
-        </div>
-      </div>
-    )
-  }
-
-  // User should be redirected to login by middleware if not authenticated
-  if (!session?.user) {
-    return null
-  }
 
   const isAdmin = canAccessAdmin(session.user)
   const isBetterAdmin = isBetterAuthAdmin(session.user)
@@ -65,13 +58,9 @@ export default function Home() {
             </div>
 
             {/* Logout Button */}
-            <Button
-              onClick={() => signOut()}
-              className="w-full"
-              variant="outline"
-            >
+            <SignOutButton className="w-full" variant="outline">
               {tCommon('signOut')}
-            </Button>
+            </SignOutButton>
           </CardContent>
         </Card>
       </div>

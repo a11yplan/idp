@@ -1,7 +1,7 @@
 import createMiddleware from 'next-intl/middleware'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { auth } from '@/lib/auth'
+import { getSessionCookie } from 'better-auth/cookies'
 import { isPublicRoute, isAdminRoute, getLoginUrl } from '@/lib/routes'
 import { config as appConfig } from '@/lib/config'
 
@@ -17,10 +17,16 @@ const intlMiddleware = createMiddleware({
  *
  * This middleware:
  * 1. Handles i18n routing (locale detection and prefixing)
- * 2. Checks authentication status for protected routes
- * 3. Redirects unauthenticated users to login
- * 4. Protects admin routes from non-admin users
- * 5. Preserves intended destination for post-login redirect
+ * 2. Performs lightweight authentication check (cookie existence)
+ * 3. Redirects unauthenticated users to login for fast UX
+ *
+ * SECURITY NOTE: This middleware only checks for session cookie existence.
+ * It does NOT validate the session. Protected pages MUST perform server-side
+ * session validation using auth.api.getSession() for security.
+ *
+ * This approach follows Better Auth best practices:
+ * - Middleware: Fast optimistic redirects (no DB calls)
+ * - Server Components: Secure session validation (with DB)
  */
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
@@ -56,37 +62,20 @@ export async function middleware(request: NextRequest) {
     return intlResponse
   }
 
-  // Step 3: Check authentication status
-  try {
-    const session = await auth.api.getSession({
-      headers: request.headers,
-    })
+  // Step 3: Check for session cookie (lightweight, fast check)
+  // NOTE: This only checks cookie existence, not validity
+  const sessionCookie = getSessionCookie(request)
 
-    // Protected route but user is not authenticated
-    if (!session) {
-      const locale = isValidLocale ? pathnameLocale : appConfig.defaultLocale
-      const loginUrl = `/${locale}${getLoginUrl(pathnameWithoutLocale)}`
-      return NextResponse.redirect(new URL(loginUrl, request.url))
-    }
-
-    // Step 4: Check admin routes
-    if (isAdminRoute(pathnameWithoutLocale)) {
-      const userRole = (session.user as any).role
-
-      if (userRole !== 'admin' && userRole !== 'owner') {
-        const locale = isValidLocale ? pathnameLocale : appConfig.defaultLocale
-        return NextResponse.redirect(new URL(`/${locale}/`, request.url))
-      }
-    }
-
-    // User is authenticated and authorized
-    return intlResponse
-  } catch (error) {
-    // On error, redirect to login for safety
+  // Protected route but user has no session cookie
+  if (!sessionCookie) {
     const locale = isValidLocale ? pathnameLocale : appConfig.defaultLocale
     const loginUrl = `/${locale}${getLoginUrl(pathnameWithoutLocale)}`
     return NextResponse.redirect(new URL(loginUrl, request.url))
   }
+
+  // Session cookie exists - allow request to proceed
+  // The page itself will validate the session server-side
+  return intlResponse
 }
 
 /**
