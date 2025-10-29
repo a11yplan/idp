@@ -8,7 +8,6 @@ import { Breadcrumb } from "@/components/navigation/breadcrumb";
 import { ToasterWrapper } from "@/components/toaster-wrapper";
 import { AutumnProvider } from "autumn-js/react";
 import { OrganizationProvider } from "@/contexts/organization-context";
-import { AuthProvider } from "@/components/providers/auth-provider";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { config } from "@/lib/config";
 
@@ -43,14 +42,12 @@ export default async function RootLayout({
         <ErrorBoundary>
           <NextIntlClientProvider locale={locale} messages={messages}>
             <AutumnProvider betterAuthUrl={betterAuthUrl}>
-              <AuthProvider>
-                <OrganizationProvider>
-                  <Navbar />
-                  <Breadcrumb />
-                  <main>{children}</main>
-                  <ToasterWrapper />
-                </OrganizationProvider>
-              </AuthProvider>
+              <OrganizationProvider>
+                <Navbar />
+                <Breadcrumb />
+                <main>{children}</main>
+                <ToasterWrapper />
+              </OrganizationProvider>
             </AutumnProvider>
           </NextIntlClientProvider>
         </ErrorBoundary>

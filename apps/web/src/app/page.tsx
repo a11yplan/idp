@@ -2,8 +2,7 @@
 
 import Link from "next/link"
 import { useTranslations } from "next-intl"
-import { useAuth } from "@/components/providers/auth-provider"
-import { signOut } from "@/lib/auth-client"
+import { signOut, useSession } from "@/lib/auth-client"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -17,7 +16,7 @@ export default function Home() {
   const t = useTranslations('home')
   const tCommon = useTranslations('common')
   const tAuth = useTranslations('auth')
-  const { session, isLoading } = useAuth()
+  const { data: session, isPending: isLoading } = useSession()
 
   if (isLoading) {
     return (

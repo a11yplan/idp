@@ -33,8 +33,12 @@
     "@react-email/preview-server": "4.3.2",
     "@types/react": "^19.0.1",
     "@types/react-dom": "^19.0.1",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
     "react-email": "4.3.2"
+  },
+  "resolutions": {
+    "react": "19.2.0",
+    "react-dom": "19.2.0"
   }
 }

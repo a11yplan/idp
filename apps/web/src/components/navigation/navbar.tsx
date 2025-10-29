@@ -10,7 +10,7 @@ import { OrganizationSwitcher } from "@/components/organization/org-switcher"
 import { LanguageSwitcher } from "@/components/ui/language-switcher"
 import { AppLogo } from "@/components/ui/app-logo"
 import { useOrganization } from "@/contexts/organization-context"
-import { useAuth } from "@/components/providers/auth-provider"
+import { useSession } from "@/lib/auth-client"
 import { Button } from "@/components/ui/button"
 import { Menu, X } from "lucide-react"
 import { useState } from "react"
@@ -23,8 +23,8 @@ export function Navbar() {
   const t = useTranslations('nav')
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
-  // Use the auth context with error handling
-  const { session, isLoading } = useAuth()
+  // Use Better Auth's session hook
+  const { data: session, isPending: isLoading } = useSession()
   const { organizations } = useOrganization()
 
   // Strip locale from pathname for comparisons
