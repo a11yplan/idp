@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { BetterAuthLogger } from "@/lib/debug-logger"
 
 
 export const dynamic = 'force-dynamic'
@@ -42,6 +43,8 @@ export default function CreateOrganizationPage() {
     setLoading(true)
     setError("")
 
+    console.log('🏢 [Organization Create] Creating organization:', { name, slug, description })
+
     try {
       const result = await organization.create({
         name,
@@ -49,13 +52,39 @@ export default function CreateOrganizationPage() {
         metadata: description ? { description } : undefined,
       })
 
+      console.log('🏢 [Organization Create] Create result:', result)
+
       if (result.error) {
+        console.error('❌ [Organization Create] Failed to create organization:', result.error)
+        BetterAuthLogger.org.error('create', result.error)
         setError(result.error.message || "Failed to create organization")
       } else if (result.data) {
-        router.push(`/organizations/${result.data.id}`)
+        const orgData = result.data as any
+
+        console.log('✅ [Organization Create] Organization created successfully:', {
+          id: orgData.id,
+          name: orgData.name,
+          slug: orgData.slug,
+          // The role should be included in the response
+          role: orgData.role,
+        })
+
+        BetterAuthLogger.org.created(
+          orgData.id,
+          orgData.name,
+          orgData.role || 'owner' // Should be 'owner' by default
+        )
+
+        // Log a reminder for debugging
+        console.log('💡 [Organization Create] Expected role: "owner" (as creator)')
+        console.log('💡 [Organization Create] Check server logs for "🎉 [Better Auth] Organization created"')
+
+        router.push(`/organizations/${orgData.id}`)
         router.refresh()
       }
     } catch (err: any) {
+      console.error('❌ [Organization Create] Exception during creation:', err)
+      BetterAuthLogger.org.error('create', err)
       setError(err.message || "An error occurred")
     } finally {
       setLoading(false)

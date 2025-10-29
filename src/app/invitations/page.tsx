@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { toast } from "sonner"
+import { BetterAuthLogger } from "@/lib/debug-logger"
 
 export const dynamic = 'force-dynamic'
 
@@ -47,17 +48,33 @@ export default function InvitationsPage() {
   }, [session])
 
   const fetchInvitations = async () => {
+    console.log('📧 [Invitations] Fetching user invitations...')
+
     try {
       const result = await organization.listUserInvitations()
+
+      console.log('📧 [Invitations] List result:', result)
+
       if (result.data) {
+        const allInvitations = result.data as any[]
+        console.log('📧 [Invitations] All invitations:', allInvitations)
+
         // Filter for pending invitations only
-        const pending = (result.data as any[]).filter(
+        const pending = allInvitations.filter(
           (inv: any) => inv.status === "pending"
         )
+
+        console.log('📧 [Invitations] Pending invitations:', pending)
+
         setInvitations(pending)
+        BetterAuthLogger.invitations.fetched(pending.length, 'pending')
+      } else {
+        console.warn('⚠️ [Invitations] No data in result')
+        BetterAuthLogger.invitations.fetched(0, 'pending')
       }
     } catch (error) {
       console.error("Failed to fetch invitations:", error)
+      BetterAuthLogger.invitations.error('fetch', error)
       toast.error("Failed to load invitations")
     } finally {
       setLoading(false)
@@ -65,15 +82,24 @@ export default function InvitationsPage() {
   }
 
   const handleAccept = async (invitationId: string) => {
+    const invitation = invitations.find((inv) => inv.id === invitationId)
+    console.log('✅ [Invitations] Accepting invitation:', { invitationId, invitation })
+
     setActionLoading(invitationId)
     try {
       const result = await organization.acceptInvitation({
         invitationId,
       })
 
+      console.log('✅ [Invitations] Accept result:', result)
+
       if (result.error) {
+        console.error('❌ [Invitations] Failed to accept:', result.error)
+        BetterAuthLogger.invitations.error('accept', result.error)
         toast.error(result.error.message || "Failed to accept invitation")
       } else {
+        console.log('✅ [Invitations] Invitation accepted successfully')
+        BetterAuthLogger.invitations.accepted(invitationId, invitation?.organization.name || 'Unknown')
         toast.success("Invitation accepted! Welcome to the organization.")
         // Remove from list
         setInvitations(invitations.filter((inv) => inv.id !== invitationId))
@@ -81,6 +107,8 @@ export default function InvitationsPage() {
         router.refresh()
       }
     } catch (error: any) {
+      console.error('❌ [Invitations] Exception during accept:', error)
+      BetterAuthLogger.invitations.error('accept', error)
       toast.error(error.message || "An error occurred")
     } finally {
       setActionLoading(null)
@@ -88,20 +116,30 @@ export default function InvitationsPage() {
   }
 
   const handleReject = async (invitationId: string) => {
+    console.log('❌ [Invitations] Rejecting invitation:', invitationId)
+
     setActionLoading(invitationId)
     try {
       const result = await organization.rejectInvitation({
         invitationId,
       })
 
+      console.log('❌ [Invitations] Reject result:', result)
+
       if (result.error) {
+        console.error('❌ [Invitations] Failed to reject:', result.error)
+        BetterAuthLogger.invitations.error('reject', result.error)
         toast.error(result.error.message || "Failed to reject invitation")
       } else {
+        console.log('✅ [Invitations] Invitation rejected successfully')
+        BetterAuthLogger.invitations.rejected(invitationId)
         toast.success("Invitation rejected")
         // Remove from list
         setInvitations(invitations.filter((inv) => inv.id !== invitationId))
       }
     } catch (error: any) {
+      console.error('❌ [Invitations] Exception during reject:', error)
+      BetterAuthLogger.invitations.error('reject', error)
       toast.error(error.message || "An error occurred")
     } finally {
       setActionLoading(null)

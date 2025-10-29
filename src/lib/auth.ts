@@ -139,10 +139,87 @@ export const auth = betterAuth({
       // Default roles: owner, admin, member
       defaultRole: 'member',
 
+      // Explicitly set creator role to 'owner'
+      creatorRole: 'owner',
+
+      // Organization hooks for logging and debugging
+      organizationHooks: {
+        // After creating an organization
+        afterCreateOrganization: async ({ organization, user, member }) => {
+          console.log('🎉 [Better Auth] Organization created', {
+            organizationId: organization.id,
+            organizationName: organization.name,
+            organizationSlug: organization.slug,
+            userId: user?.id || 'Unknown',
+            userEmail: user?.email || 'Unknown',
+            memberRole: member?.role || 'Unknown',
+            createdAt: organization.createdAt,
+          })
+        },
+
+        // After creating an invitation
+        afterCreateInvitation: async ({ invitation, inviter, organization }) => {
+          console.log('📧 [Better Auth] Invitation created', {
+            invitationId: invitation.id,
+            invitedEmail: invitation.email,
+            role: invitation.role,
+            organizationId: organization.id,
+            organizationName: organization.name,
+            inviterId: inviter.userId,
+            // Use optional chaining - inviter structure varies
+            inviterEmail: inviter.user?.email || inviter.email || 'Unknown',
+            expiresAt: invitation.expiresAt,
+          })
+        },
+
+        // After accepting an invitation
+        afterAcceptInvitation: async ({ invitation, member, user, organization }) => {
+          console.log('✅ [Better Auth] Invitation accepted', {
+            invitationId: invitation.id,
+            userId: user?.id || 'Unknown',
+            userEmail: user?.email || 'Unknown',
+            memberRole: member?.role || 'Unknown',
+            organizationId: organization.id,
+            organizationName: organization.name,
+          })
+        },
+
+        // After cancelling an invitation
+        afterCancelInvitation: async ({ invitation, cancelledBy, organization }) => {
+          console.log('🚫 [Better Auth] Invitation cancelled', {
+            invitationId: invitation.id,
+            invitedEmail: invitation.email,
+            cancelledByUserId: cancelledBy?.userId || 'Unknown',
+            organizationId: organization.id,
+            organizationName: organization.name,
+          })
+        },
+
+        // After rejecting an invitation
+        afterRejectInvitation: async ({ invitation, user, organization }) => {
+          console.log('❌ [Better Auth] Invitation rejected', {
+            invitationId: invitation.id,
+            userId: user?.id || 'Unknown',
+            userEmail: user?.email || 'Unknown',
+            organizationId: organization.id,
+            organizationName: organization.name,
+          })
+        },
+      },
+
       // Send invitation email when user is invited to organization
       async sendInvitationEmail(data) {
         const baseUrl = process.env.BETTER_AUTH_URL || process.env.NEXTAUTH_URL || 'http://localhost:3000'
         const inviteLink = `${baseUrl}/accept-invitation/${data.id}`
+
+        console.log('📤 [Better Auth] Sending invitation email', {
+          invitationId: data.id,
+          email: data.email,
+          role: Array.isArray(data.role) ? data.role[0] : data.role,
+          organizationId: data.organization.id,
+          organizationName: data.organization.name,
+          inviteLink,
+        })
 
         await sendOrganizationInvitationEmail({
           email: data.email,
@@ -151,6 +228,8 @@ export const auth = betterAuth({
           inviteLink,
           role: Array.isArray(data.role) ? data.role[0] : data.role,
         })
+
+        console.log('✅ [Better Auth] Invitation email sent successfully to', data.email)
       },
     }),
     admin({
@@ -162,11 +241,11 @@ export const auth = betterAuth({
       // Admin permissions
       impersonationSessionDuration: 60 * 60, // 1 hour
     }),
-    autumn({
-      // Autumn billing configuration
-      // Billing is scoped to organizations (not individual users)
-      customerScope: 'organization',
-    }),
+    // autumn({
+    //   // Autumn billing configuration
+    //   // Billing is scoped to organizations (not individual users)
+    //   customerScope: 'organization',
+    // }),
   ],
 
   // Advanced options

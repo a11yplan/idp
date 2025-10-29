@@ -2,7 +2,7 @@
 
 
 import { useEffect, useState } from "react"
-import { organization, authClient } from "@/lib/auth-client"
+import { organization, authClient, useSession } from "@/lib/auth-client"
 import { useParams } from "next/navigation"
 import { BackButton } from "@/components/navigation/back-button"
 import { Button } from "@/components/ui/button"
@@ -12,6 +12,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { BetterAuthLogger } from "@/lib/debug-logger"
 import {
   Dialog,
   DialogContent,
@@ -47,6 +48,7 @@ interface Member {
 export default function OrganizationMembersPage() {
   const params = useParams()
   const orgId = params.id as string
+  const { data: session } = useSession()
 
   const [members, setMembers] = useState<Member[]>([])
   const [loading, setLoading] = useState(true)
@@ -64,58 +66,117 @@ export default function OrganizationMembersPage() {
   useEffect(() => {
     const fetchMembers = async () => {
       try {
+        BetterAuthLogger.members.response({ message: 'Fetching members for organization', orgId })
+
         // Use direct fetch with explicit GET method to work around Better Auth client bug
         const membersResult = await authClient.$fetch('/organization/list-members', {
           method: 'GET',
           query: { organizationId: orgId },
         })
 
+        BetterAuthLogger.members.response(membersResult)
+
         // Handle response format: { data: { members: [...], total: 1 }, error: null }
         const data = membersResult.data as any
+        let membersList: any[] = []
+
         if (data && Array.isArray(data.members)) {
+          membersList = data.members
           setMembers(data.members)
+          BetterAuthLogger.members.fetched(data.members.length, orgId)
         } else if (Array.isArray(membersResult)) {
+          membersList = membersResult as any
           setMembers(membersResult as any)
+          BetterAuthLogger.members.fetched(membersResult.length, orgId)
         } else if (membersResult && Array.isArray((membersResult as any).members)) {
+          membersList = (membersResult as any).members
           setMembers((membersResult as any).members)
+          BetterAuthLogger.members.fetched((membersResult as any).members.length, orgId)
         } else {
           console.warn('Unexpected members response format:', membersResult)
+          BetterAuthLogger.members.error('fetch - unexpected response format', new Error('Unexpected response format'))
           setMembers([])
         }
 
-        // Get user's role
-        const listResult = await organization.list()
-        if (listResult.data) {
-          const userOrg = (listResult.data as any[]).find((o: any) => o.id === orgId)
-          if (userOrg) {
-            setUserRole(userOrg.role)
+        // Get user's role from members list (FIXED: organization.list() doesn't return role)
+        if (session?.user?.id && membersList.length > 0) {
+          console.log('🔍 [Members] Looking for current user in members list:', session.user.id)
+          const currentUserMember = membersList.find(
+            (m: any) => m.userId === session.user.id
+          )
+
+          if (currentUserMember) {
+            const role = currentUserMember.role
+            setUserRole(role)
+
+            const isAdmin = role === "owner" || role === "admin"
+            console.log('🎯 [Members] USER ROLE FROM MEMBERS LIST:', {
+              userId: session.user.id,
+              organizationId: orgId,
+              userRole: role,
+              isOwnerOrAdmin: isAdmin,
+              canInvite: isAdmin
+            })
+
+            BetterAuthLogger.org.roleChecked(orgId, role, isAdmin)
+          } else {
+            console.warn('⚠️ [Members] Current user not found in members list!', {
+              userId: session.user.id,
+              availableMembers: membersList.map(m => ({ userId: m.userId, role: m.role }))
+            })
           }
+        } else {
+          console.warn('⚠️ [Members] Cannot determine role:', {
+            hasSession: !!session?.user?.id,
+            membersCount: membersList.length
+          })
+        }
+
+        // DEPRECATED: organization.list() doesn't include role property
+        // Keeping this for debugging/comparison purposes only
+        console.log('🔍 [Members] Checking organization.list() for comparison (not used for role)...')
+        const listResult = await organization.list()
+        BetterAuthLogger.org.listResponse(listResult)
+
+        if (listResult.data) {
+          const orgs = listResult.data as any[]
+          console.log('🔍 [Members] organization.list() response:', orgs)
+          const userOrg = orgs.find((o: any) => o.id === orgId)
+          console.log('⚠️ [Members] NOTE: organization.list() does NOT include role property:', userOrg)
         }
 
         // Fetch pending invitations for admins/owners using explicit GET
+        console.log('📧 [Members] Fetching invitations...')
         const invitationsResult = await authClient.$fetch('/organization/list-invitations', {
           method: 'GET',
           query: { organizationId: orgId },
         })
 
+        BetterAuthLogger.invitations.response(invitationsResult)
+
         // Handle response format: { data: [], error: null } where data is the array
         if (invitationsResult.data && Array.isArray(invitationsResult.data)) {
           const pending = invitationsResult.data.filter((inv: any) => inv.status === "pending")
           setPendingInvitations(pending)
+          BetterAuthLogger.invitations.fetched(pending.length, 'pending')
         } else if (Array.isArray(invitationsResult)) {
           const pending = invitationsResult.filter((inv: any) => inv.status === "pending")
           setPendingInvitations(pending)
+          BetterAuthLogger.invitations.fetched(pending.length, 'pending')
         } else if (invitationsResult && Array.isArray((invitationsResult as any).invitations)) {
           const pending = (invitationsResult as any).invitations.filter(
             (inv: any) => inv.status === "pending"
           )
           setPendingInvitations(pending)
+          BetterAuthLogger.invitations.fetched(pending.length, 'pending')
         } else {
           console.warn('Unexpected invitations response format:', invitationsResult)
+          BetterAuthLogger.invitations.error('fetch - unexpected response format', new Error('Unexpected response format'))
           setPendingInvitations([])
         }
       } catch (error) {
         console.error("Failed to fetch members:", error)
+        BetterAuthLogger.members.error('fetch', error)
         setMembers([])
         setPendingInvitations([])
       } finally {
@@ -131,6 +192,8 @@ export default function OrganizationMembersPage() {
     setInviteError("")
     setInviteSuccess("")
 
+    console.log('📧 [Members] Attempting to invite member:', { orgId, email: inviteEmail, role: inviteRole })
+
     try {
       const result = await organization.inviteMember({
         organizationId: orgId,
@@ -138,9 +201,15 @@ export default function OrganizationMembersPage() {
         role: inviteRole,
       })
 
+      console.log('📧 [Members] Invite member result:', result)
+
       if (result.error) {
+        console.error('❌ [Members] Failed to invite member:', result.error)
+        BetterAuthLogger.invitations.error('send', result.error)
         setInviteError(result.error.message || "Failed to send invitation")
       } else {
+        console.log('✅ [Members] Invitation sent successfully')
+        BetterAuthLogger.invitations.sent(inviteEmail, inviteRole, orgId)
         setInviteSuccess("Invitation sent successfully!")
         setInviteEmail("")
         setInviteRole("member")
@@ -182,21 +251,29 @@ export default function OrganizationMembersPage() {
       return
     }
 
+    console.log('🚫 [Members] Cancelling invitation:', invitationId)
+
     try {
       // Note: Method name should be organization.cancelInvitation as per docs
       await organization.cancelInvitation({
         invitationId,
       })
 
+      console.log('✅ [Members] Invitation cancelled successfully')
+      BetterAuthLogger.invitations.cancelled(invitationId)
+
       // Remove from local state
       setPendingInvitations(pendingInvitations.filter((inv) => inv.id !== invitationId))
     } catch (error: any) {
       console.error("Cancel invitation error:", error)
+      BetterAuthLogger.invitations.error('cancel', error)
       alert(error.message || "Failed to cancel invitation")
     }
   }
 
   const handleResendInvitation = async (invitationId: string, email: string, role: "member" | "owner" | "admin") => {
+    console.log('🔄 [Members] Resending invitation:', { invitationId, email, role })
+
     try {
       const result = await organization.inviteMember({
         organizationId: orgId, // Explicitly pass organizationId
@@ -206,12 +283,17 @@ export default function OrganizationMembersPage() {
       })
 
       if (result.error) {
+        console.error('❌ [Members] Failed to resend invitation:', result.error)
+        BetterAuthLogger.invitations.error('resend', result.error)
         alert(result.error.message || "Failed to resend invitation")
       } else {
+        console.log('✅ [Members] Invitation resent successfully')
+        BetterAuthLogger.invitations.resent(invitationId, email)
         alert("Invitation resent successfully!")
       }
     } catch (error: any) {
       console.error("Resend invitation error:", error)
+      BetterAuthLogger.invitations.error('resend', error)
       alert(error.message || "Failed to resend invitation")
     }
   }
@@ -221,26 +303,38 @@ export default function OrganizationMembersPage() {
       return
     }
 
+    console.log('🗑️ [Members] Removing member:', userId)
+
     try {
       await organization.removeMember({
         organizationId: orgId,
         memberIdOrEmail: userId,
       })
 
+      console.log('✅ [Members] Member removed successfully')
+      BetterAuthLogger.members.removed(userId)
+
       // Refresh members list
       setMembers(members.filter((m) => m.userId !== userId))
     } catch (error: any) {
+      console.error('❌ [Members] Failed to remove member:', error)
+      BetterAuthLogger.members.error('remove', error)
       alert(error.message || "Failed to remove member")
     }
   }
 
   const handleUpdateRole = async (userId: string, newRole: string) => {
+    console.log('🔄 [Members] Updating member role:', { userId, newRole })
+
     try {
       await organization.updateMemberRole({
         organizationId: orgId,
         memberId: userId,
         role: newRole,
       })
+
+      console.log('✅ [Members] Member role updated successfully')
+      BetterAuthLogger.members.roleUpdated(userId, newRole)
 
       // Update local state
       setMembers(
@@ -249,6 +343,8 @@ export default function OrganizationMembersPage() {
         )
       )
     } catch (error: any) {
+      console.error('❌ [Members] Failed to update role:', error)
+      BetterAuthLogger.members.error('update role', error)
       alert(error.message || "Failed to update role")
     }
   }
@@ -270,6 +366,62 @@ export default function OrganizationMembersPage() {
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8 max-w-5xl space-y-6">
         <BackButton href={`/organizations/${orgId}`} />
+
+        {/* Debug Panel - Only in Development */}
+        {process.env.NODE_ENV === 'development' && (
+          <Card className="bg-blue-50 border-blue-200">
+            <CardHeader>
+              <CardTitle className="text-sm flex items-center gap-2">
+                🔍 Debug Panel (Development Only)
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="text-sm space-y-2">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <strong>Organization ID:</strong> {orgId}
+                </div>
+                <div>
+                  <strong>User Role:</strong>{' '}
+                  <Badge variant={userRole ? 'default' : 'secondary'}>
+                    {userRole || 'Not Set'}
+                  </Badge>
+                </div>
+                <div>
+                  <strong>Is Owner/Admin:</strong>{' '}
+                  <Badge variant={isOwnerOrAdmin ? 'default' : 'destructive'}>
+                    {isOwnerOrAdmin ? 'Yes ✅' : 'No ❌'}
+                  </Badge>
+                </div>
+                <div>
+                  <strong>Can Invite:</strong>{' '}
+                  <Badge variant={isOwnerOrAdmin ? 'default' : 'destructive'}>
+                    {isOwnerOrAdmin ? 'Yes ✅' : 'No ❌'}
+                  </Badge>
+                </div>
+                <div>
+                  <strong>Members Count:</strong> {members.length}
+                </div>
+                <div>
+                  <strong>Pending Invites:</strong> {pendingInvitations.length}
+                </div>
+              </div>
+              <Alert className="mt-4">
+                <AlertDescription>
+                  <strong>💡 Troubleshooting:</strong>
+                  <br />
+                  If you can't see the invite button, check the console logs for:
+                  <br />
+                  • "🎯 [Members] USER ROLE DETECTED" - shows your actual role
+                  <br />
+                  • Look for warnings about missing organization or role data
+                  <br />
+                  • Check if userRole is "owner" or "admin" (case-sensitive)
+                </AlertDescription>
+              </Alert>
+            </CardContent>
+          </Card>
+        )}
+
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold">Members</h1>
