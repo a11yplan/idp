@@ -16,7 +16,7 @@ import { Menu, X } from "lucide-react"
 import { useState } from "react"
 import { cn } from "@/lib/utils"
 import { config } from "@/lib/config"
-import { canAccessAdmin } from "@/lib/rbac"
+import { canAccessAdmin, isBetterAuthAdmin } from "@/lib/rbac"
 
 export function Navbar() {
   const pathname = usePathname()
@@ -41,6 +41,7 @@ export function Navbar() {
   }
 
   const isAdmin = canAccessAdmin(session.user)
+  const isBetterAdmin = isBetterAuthAdmin(session.user)
 
   // Filter nav items based on auth, admin status, and feature flags
   const visibleNavItems = navItems.filter(item => {
@@ -90,55 +91,59 @@ export function Navbar() {
               </span>
             </Link>
 
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex md:gap-6 md:items-center">
-              {visibleNavItems.map((item) => {
-                // Get translation key from href (e.g., /profile -> profile)
-                const translationKey = item.href === '/' ? 'home' : item.href.slice(1).split('/')[0]
+            {/* Desktop Navigation - Only show for admin users */}
+            {isBetterAdmin && (
+              <div className="hidden md:flex md:gap-6 md:items-center">
+                {visibleNavItems.map((item) => {
+                  // Get translation key from href (e.g., /profile -> profile)
+                  const translationKey = item.href === '/' ? 'home' : item.href.slice(1).split('/')[0]
 
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={cn(
-                      "text-sm font-medium transition-colors hover:text-primary",
-                      isActiveRoute(item.href)
-                        ? "text-foreground"
-                        : "text-muted-foreground"
-                    )}
-                  >
-                    {t(translationKey as any)}
-                  </Link>
-                )
-              })}
-              {config.features.organizations && <OrganizationSwitcher />}
-            </div>
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={cn(
+                        "text-sm font-medium transition-colors hover:text-primary",
+                        isActiveRoute(item.href)
+                          ? "text-foreground"
+                          : "text-muted-foreground"
+                      )}
+                    >
+                      {t(translationKey as any)}
+                    </Link>
+                  )
+                })}
+                {config.features.organizations && <OrganizationSwitcher />}
+              </div>
+            )}
           </div>
 
-          {/* Right side - Language, Invitations, User menu and mobile toggle */}
+          {/* Right side - Language, User menu (and Invitations + Mobile toggle for admins) */}
           <div className="flex items-center gap-2">
             <LanguageSwitcher />
-            {config.features.invitations && <InvitationBadge />}
+            {isBetterAdmin && config.features.invitations && <InvitationBadge />}
             <UserMenu />
 
-            {/* Mobile menu button */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="md:hidden"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            >
-              {mobileMenuOpen ? (
-                <X className="h-5 w-5" />
-              ) : (
-                <Menu className="h-5 w-5" />
-              )}
-            </Button>
+            {/* Mobile menu button - Only for admin users */}
+            {isBetterAdmin && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="md:hidden"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              >
+                {mobileMenuOpen ? (
+                  <X className="h-5 w-5" />
+                ) : (
+                  <Menu className="h-5 w-5" />
+                )}
+              </Button>
+            )}
           </div>
         </div>
 
-        {/* Mobile Navigation */}
-        {mobileMenuOpen && (
+        {/* Mobile Navigation - Only show for admin users */}
+        {isBetterAdmin && mobileMenuOpen && (
           <div className="border-t py-4 md:hidden">
             <div className="flex flex-col gap-4">
               {visibleNavItems.map((item) => {

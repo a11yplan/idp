@@ -3,10 +3,12 @@
 import Link from "next/link"
 import { useTranslations } from "next-intl"
 import { useAuth } from "@/components/providers/auth-provider"
+import { signOut } from "@/lib/auth-client"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
-import { canAccessAdmin, getUserDisplayName } from "@/lib/rbac"
+import { canAccessAdmin, getUserDisplayName, isBetterAuthAdmin } from "@/lib/rbac"
 import { config } from "@/lib/config"
 
 export const dynamic = 'force-dynamic'
@@ -34,7 +36,50 @@ export default function Home() {
   }
 
   const isAdmin = canAccessAdmin(session.user)
+  const isBetterAdmin = isBetterAuthAdmin(session.user)
   const displayName = getUserDisplayName(session.user)
+
+  // Simplified view for non-admin users
+  if (!isBetterAdmin) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle className="text-2xl text-center">
+              {t('welcomeBack', { name: displayName })}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* User Information */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between border-b pb-3">
+                <span className="text-sm text-muted-foreground">{tCommon('email')}</span>
+                <span className="text-sm font-medium">{session.user.email}</span>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-muted-foreground">{tAuth('emailVerified')}</span>
+                <Badge variant={session.user.emailVerified ? "default" : "secondary"}>
+                  {session.user.emailVerified ? tAuth('verified') : tAuth('notVerified')}
+                </Badge>
+              </div>
+            </div>
+
+            {/* Logout Button */}
+            <Button
+              onClick={() => signOut()}
+              className="w-full"
+              variant="outline"
+            >
+              {tCommon('signOut')}
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  // Full dashboard for admin users
 
   return (
     <div className="min-h-screen bg-gray-50">
