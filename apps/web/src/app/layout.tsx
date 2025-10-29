@@ -2,14 +2,20 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, getLocale } from 'next-intl/server';
+import dynamic from 'next/dynamic';
 import "./globals.css";
-import { Navbar } from "@/components/navigation/navbar";
 import { Breadcrumb } from "@/components/navigation/breadcrumb";
 import { ToasterWrapper } from "@/components/toaster-wrapper";
 import { AutumnProvider } from "autumn-js/react";
 import { OrganizationProvider } from "@/contexts/organization-context";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { config } from "@/lib/config";
+
+// Dynamically import Navbar to ensure it only renders on client-side
+// This prevents React hooks errors during server-side rendering
+const Navbar = dynamic(() => import("@/components/navigation/navbar").then(mod => ({ default: mod.Navbar })), {
+  ssr: false,
+});
 
 const inter = Inter({ subsets: ["latin"] });
 

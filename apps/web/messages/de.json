@@ -20,7 +20,9 @@
     "banned": "Gesperrt",
     "verified": "Verifiziert",
     "notVerified": "Nicht verifiziert",
-    "name": "Name"
+    "name": "Name",
+    "email": "E-Mail",
+    "role": "Rolle"
   },
   "nav": {
     "home": "Startseite",

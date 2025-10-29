@@ -20,7 +20,9 @@
     "banned": "Banned",
     "verified": "Verified",
     "notVerified": "Not Verified",
-    "name": "Name"
+    "name": "Name",
+    "email": "Email",
+    "role": "Role"
   },
   "nav": {
     "home": "Home",
