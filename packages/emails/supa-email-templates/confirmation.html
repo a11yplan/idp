@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="x-apple-disable-message-reformatting">
+    <title>Confirm Your Email Address</title>
+    
+    <style>
+        /* Client-specific styles */
+        body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+        table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+        img { -ms-interpolation-mode: bicubic; }
+
+        /* Reset styles */
+        img { border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
+        table { border-collapse: collapse !important; }
+        body { height: 100% !important; margin: 0 !important; padding: 0 !important; width: 100% !important; }
+
+        /* iOS blue links */
+        a[x-apple-data-detectors] {
+            color: inherit !important;
+            text-decoration: none !important;
+            font-size: inherit !important;
+            font-family: inherit !important;
+            font-weight: inherit !important;
+            line-height: inherit !important;
+        }
+
+        /* Gmail blue links */
+        u + #body a {
+            color: inherit;
+            text-decoration: none;
+            font-size: inherit;
+            font-family: inherit;
+            font-weight: inherit;
+            line-height: inherit;
+        }
+
+        /* Samsung blue links */
+        #MessageViewBody a {
+            color: inherit;
+            text-decoration: none;
+            font-size: inherit;
+            font-family: inherit;
+            font-weight: inherit;
+            line-height: inherit;
+        }
+
+        /* Universal styles */
+        .button {
+            background-color: #3A77FF;
+            border-radius: 4px;
+            color: #ffffff;
+            display: inline-block;
+            font-family: 'Montserrat', 'Segoe UI', 'Arial', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            line-height: normal;
+            text-align: center;
+            text-decoration: none;
+            padding: 10px 25px;
+            width: auto;
+            min-width: 200px;
+            -webkit-text-size-adjust: none;
+        }
+
+        /* What it does: Responsive design for email width */
+        @media screen and (max-width: 600px) {
+            .fluid {
+                width: 100% !important;
+                max-width: 100% !important;
+                height: auto !important;
+                margin-left: auto !important;
+                margin-right: auto !important;
+            }
+            
+            .stack-column,
+            .stack-column-center {
+                display: block !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                direction: ltr !important;
+            }
+            
+            .stack-column-center {
+                text-align: center !important;
+            }
+            
+            .center-on-narrow {
+                text-align: center !important;
+                display: block !important;
+                margin-left: auto !important;
+                margin-right: auto !important;
+                float: none !important;
+            }
+            
+            table.center-on-narrow {
+                display: inline-block !important;
+            }
+            
+            .email-container p {
+                font-size: 16px !important;
+                line-height: 24px !important;
+            }
+        }
+    </style>
+</head>
+
+<body width="100%" style="margin: 0; padding: 0 !important; background-color: #f5f5f5; font-family: 'Montserrat', 'Segoe UI', 'Arial', sans-serif;">
+    <center style="width: 100%; background-color: #f5f5f5;">
+        <div style="max-width: 600px; margin: 0 auto;" class="email-container">
+            <!-- Header -->
+            <table align="center" role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin: auto;">
+                <tr>
+                    <td style="padding: 40px 0; text-align: center">
+                        <img src="https://a11yplan.de/a11yplan.svg" width="180" height="auto" alt="a11yplan Logo" style="display: block; margin: 0 auto;">
+                    </td>
+                </tr>
+            </table>
+
+            <!-- Email Body -->
+            <table align="center" role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin: auto;">
+                <tr>
+                    <td style="background-color: #ffffff; padding: 40px 40px 20px 40px; border-radius: 4px;">
+                        {{if eq .Data.locale "de" }}
+                        <h1 style="margin: 0 0 20px 0; font-family: 'Montserrat', 'Segoe UI', 'Arial', sans-serif; font-size: 24px; line-height: 30px; color: #333333; font-weight: 700;">E-Mail bestätigen</h1>
+                        <p style="margin: 0 0 20px 0; font-family: 'Montserrat', 'Segoe UI', 'Arial', sans-serif; font-size: 16px; line-height: 24px; color: #333333;">Danke für deine Anmeldung! Bitte klick auf den Button, um deine E-Mail-Adresse zu bestätigen.</p>
+                        {{ else }}
+                        <h1 style="margin: 0 0 20px 0; font-family: 'Montserrat', 'Segoe UI', 'Arial', sans-serif; font-size: 24px; line-height: 30px; color: #333333; font-weight: 700;">Confirm Email</h1>
+                        <p style="margin: 0 0 20px 0; font-family: 'Montserrat', 'Segoe UI', 'Arial', sans-serif; font-size: 16px; line-height: 24px; color: #333333;">Thanks for signing up! Please confirm your email by clicking the button below.</p>
+                        {{end}}
+                        <table align="center" role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: auto; padding: 20px 0;">
+                            <tr>
+                                <td class="button-td button-td-primary" style="border-radius: 4px; background: #3A77FF;">
+                                    <a class="button-a button-a-primary" href="{{ .ConfirmationURL }}" style="background: #3A77FF; border: 1px solid #3A77FF; font-family: 'Montserrat', 'Segoe UI', 'Arial', sans-serif; font-size: 16px; text-decoration: none; padding: 10px 25px; color: #ffffff; display: block; border-radius: 4px; font-weight: 700;">
+                                        {{if eq .Data.locale "de" }}Bestätigen{{ else }}Confirm{{end}}
+                                    </a>
+                                </td>
+                            </tr>
+                        </table>
+                        {{if eq .Data.locale "de" }}
+                        <p style="margin: 20px 0 10px 0; font-family: 'Montserrat', 'Segoe UI', 'Arial', sans-serif; font-size: 16px; line-height: 24px; color: #333333;">Falls du dich nicht angemeldet hast, kannst du diese E-Mail ignorieren.</p>
+                        <p style="margin: 20px 0 10px 0; font-family: 'Montserrat', 'Segoe UI', 'Arial', sans-serif; font-size: 14px; line-height: 20px; color: #666666;">Falls der Button nicht funktioniert:</p>
+                        {{ else }}
+                        <p style="margin: 20px 0 10px 0; font-family: 'Montserrat', 'Segoe UI', 'Arial', sans-serif; font-size: 16px; line-height: 24px; color: #333333;">If you didn't sign up, you can ignore this email.</p>
+                        <p style="margin: 20px 0 10px 0; font-family: 'Montserrat', 'Segoe UI', 'Arial', sans-serif; font-size: 14px; line-height: 20px; color: #666666;">If the button doesn't work:</p>
+                        {{end}}
+                        <p style="margin: 0 0 20px 0; font-family: 'Montserrat', 'Segoe UI', 'Arial', sans-serif; font-size: 14px; line-height: 20px; color: #666666; word-break: break-all; background-color: #f5f5f5; padding: 10px; border-radius: 4px;">{{ .ConfirmationURL }}</p>
+                    </td>
+                </tr>
+            </table>
+
+            <!-- Footer -->
+            <table align="center" role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin: auto;">
+                <tr>
+                    <td style="padding: 40px 0; text-align: center; color: #666666; font-size: 12px;">
+                        <p style="margin: 0;">© 2025 A11YPLAN GmbH. All rights reserved.</p>
+                        <p style="margin: 10px 0 0 0;">Hartlaubstraße 3, 74541 Vellberg, Deutschland</p>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </center>
+</body>
+</html>

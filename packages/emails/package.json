@@ -1,0 +1,40 @@
+{
+  "name": "@repo/emails",
+  "version": "0.1.0",
+  "private": true,
+  "main": "./emails/index.ts",
+  "types": "./emails/index.ts",
+  "exports": {
+    ".": "./emails/index.ts",
+    "./auth/magic-link": "./emails/auth/magic-link.tsx",
+    "./auth/reset-password": "./emails/auth/reset-password.tsx",
+    "./auth/confirmation": "./emails/auth/confirmation.tsx",
+    "./auth/invite": "./emails/auth/invite.tsx",
+    "./auth/change-email": "./emails/auth/change-email.tsx",
+    "./auth/components/*": "./emails/auth/components/*.tsx",
+    "./auth/styles": "./emails/auth/styles.ts"
+  },
+  "scripts": {
+    "build": "email build",
+    "email:dev": "email dev --port 3811",
+    "dev": "email dev --port 3811",
+    "email:export": "email export",
+    "export": "email export",
+    "clean": "rm -rf .turbo node_modules"
+  },
+  "dependencies": {
+    "@react-email/components": "0.5.7"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0"
+  },
+  "devDependencies": {
+    "@react-email/preview-server": "4.3.2",
+    "@types/react": "^19.0.1",
+    "@types/react-dom": "^19.0.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-email": "4.3.2"
+  }
+}

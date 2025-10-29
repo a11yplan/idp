@@ -1,0 +1,24 @@
+{
+  "name": "ui-better-auth",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "email:dev": "turbo run email:dev --filter=@repo/emails",
+    "email:export": "turbo run email:export --filter=@repo/emails",
+    "clean": "turbo run clean && rm -rf node_modules"
+  },
+  "devDependencies": {
+    "turbo": "^2.3.3"
+  },
+  "packageManager": "bun@1.1.42",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
