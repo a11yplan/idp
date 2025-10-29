@@ -103,12 +103,10 @@ export async function GET(request: NextRequest) {
     // User is authenticated - redirect back to client app with session info
     // The session cookie is already set and will be sent with cross-domain requests
 
-    // Build success redirect URL with state parameter if provided
-    const successUrl = buildRedirectUrl(redirectUrl, {
-      success: 'true',
-      user_id: session.user.id,
-      state: state || undefined,
-    })
+    // Build success redirect URL - only preserve state parameter if provided
+    const successUrl = state
+      ? buildRedirectUrl(redirectUrl, { state })
+      : redirectUrl
 
     return NextResponse.redirect(successUrl)
   } catch (error) {
