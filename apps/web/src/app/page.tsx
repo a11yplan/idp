@@ -101,10 +101,10 @@ export default async function Home() {
                   {session.user.emailVerified ? tAuth('verified') : tAuth('notVerified')}
                 </Badge>
               </div>
-              {session.user.role && (
+              {(session.user as any).role && (
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-muted-foreground">{tCommon('role')}</span>
-                  <Badge>{session.user.role}</Badge>
+                  <Badge>{(session.user as any).role}</Badge>
                 </div>
               )}
             </div>

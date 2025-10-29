@@ -47,7 +47,7 @@ export function AdminUsersTable({ initialUsers, currentUserId }: AdminUsersTable
   const [roleFilter, setRoleFilter] = useState<string>("all")
   const [statusFilter, setStatusFilter] = useState<string>("all")
 
-  const handleBanUser = async (userId: string) {
+  const handleBanUser = async (userId: string) => {
     const reason = prompt("Enter ban reason:")
     if (!reason) return
 
@@ -66,7 +66,7 @@ export function AdminUsersTable({ initialUsers, currentUserId }: AdminUsersTable
     }
   }
 
-  const handleUnbanUser = async (userId: string) {
+  const handleUnbanUser = async (userId: string) => {
     try {
       await admin.unbanUser({ userId })
 
@@ -79,7 +79,7 @@ export function AdminUsersTable({ initialUsers, currentUserId }: AdminUsersTable
     }
   }
 
-  const handleImpersonateUser = async (userId: string) {
+  const handleImpersonateUser = async (userId: string) => {
     try {
       await admin.impersonateUser({ userId })
       window.location.href = "/"

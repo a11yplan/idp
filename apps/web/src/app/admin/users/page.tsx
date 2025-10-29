@@ -34,7 +34,9 @@ export default async function AdminUsersPage() {
   // Fetch users server-side
   let users: User[] = []
   try {
-    const result = await auth.api.listUsers()
+    const result = await auth.api.listUsers({
+      query: {}
+    })
     users = (result?.users as User[]) || []
   } catch (error) {
     console.error('[Admin Users] Failed to fetch users:', error)

@@ -20,7 +20,7 @@ interface User {
   image: string | null
 }
 
-export default async function AdminUserDetailPage({ params }: { params: { id: string } }) {
+export default async function AdminUserDetailPage({ params }: { params: Promise<{ id: string }> }) {
   // Server-side authentication and authorization check
   const session = await auth.api.getSession({
     headers: await headers()
@@ -31,12 +31,14 @@ export default async function AdminUserDetailPage({ params }: { params: { id: st
     redirect('/')
   }
 
-  const userId = params.id
+  const { id: userId } = await params
 
   // Fetch user details server-side
   let user: User | null = null
   try {
-    const result = await auth.api.listUsers()
+    const result = await auth.api.listUsers({
+      query: {}
+    })
     const users = result?.users as User[]
     user = users?.find((u) => u.id === userId) || null
   } catch (error) {

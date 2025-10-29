@@ -22,7 +22,9 @@ export default async function AdminDashboardPage() {
   // Fetch admin stats server-side
   let userCount = 0
   try {
-    const usersResult = await auth.api.listUsers()
+    const usersResult = await auth.api.listUsers({
+      query: {}
+    })
     userCount = usersResult?.users?.length || 0
   } catch (error) {
     console.error('[Admin Dashboard] Failed to fetch user count:', error)
