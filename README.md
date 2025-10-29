@@ -1,62 +1,134 @@
-# UI Better Auth - Bun Turborepo
+# Better Auth IDP - Turborepo Monorepo
 
-A Bun-based Turborepo monorepo for Better Auth with React Email templates.
+**Identity Provider for a11yplan**
 
-## Structure
+A full-stack authentication system built with [Better Auth](https://www.better-auth.com), [Convex](https://convex.dev), [Next.js 15](https://nextjs.org), organized as a Bun-powered Turborepo monorepo.
+
+## Features
+
+✨ **Authentication Methods**
+- Email & Password with verification
+- Magic Link (passwordless)
+- Session management with cookie caching
+
+🏢 **Multi-tenant Architecture**
+- Organization management
+- Member invitations with roles
+- User impersonation for admin
+- Audit trail and activity logging
+
+🌍 **Internationalization**
+- Multi-language support (English, German)
+- Localized email templates
+- UI translations with next-intl
+
+🚀 **Technology Stack**
+- **Frontend**: Next.js 15 (App Router), React 19, TypeScript
+- **UI**: shadcn/ui, Tailwind CSS, Radix UI
+- **Authentication**: Better Auth with Convex adapter
+- **Backend**: Convex (realtime database)
+- **Email**: Resend with React Email templates
+- **Deployment**: Vercel
+- **Package Manager**: Bun
+- **Monorepo**: Turborepo
+
+## Monorepo Structure
 
 ```
 ui-better-auth/
 ├── apps/
 │   └── web/                   # Next.js app with Better Auth
+│       ├── src/
+│       │   ├── app/           # Next.js App Router
+│       │   ├── components/    # React components
+│       │   ├── lib/           # Utilities and auth config
+│       │   └── contexts/      # React contexts
+│       ├── convex/            # Convex backend functions
+│       ├── messages/          # i18n translations (en, de)
+│       └── package.json
 ├── packages/
 │   └── emails/                # React Email templates (shared)
-├── nuxt/                      # Nuxt demo (standalone)
-├── nuxt-client-demo/          # Nuxt client demo (standalone)
+│       ├── emails/auth/       # Auth email templates
+│       └── package.json
 ├── turbo.json                 # Turborepo configuration
-└── package.json               # Root workspace configuration
+├── vercel.json                # Vercel monorepo config
+└── package.json               # Root workspace
 ```
 
 ## Quick Start
 
+### 1. Install Dependencies
+
 ```bash
-# Install dependencies
 bun install
+```
 
-# Run all apps in development mode
+### 2. Setup Environment Variables
+
+```bash
+cd apps/web
+cp .env.example .env.local
+```
+
+Edit `.env.local` with your configuration:
+
+```env
+# Better Auth
+BETTER_AUTH_SECRET=your-random-secret-min-32-characters
+BETTER_AUTH_URL=http://localhost:3810
+
+# Convex
+CONVEX_DEPLOYMENT=your-convex-deployment
+NEXT_PUBLIC_CONVEX_URL=https://your-project.convex.cloud
+
+# Email (Resend)
+RESEND_API_KEY=re_your_api_key
+RESEND_FROM_EMAIL=noreply@yourdomain.com
+
+# App
+NEXT_PUBLIC_APP_URL=http://localhost:3810
+EMAIL_LOCALE=en  # or 'de' for German
+```
+
+Generate a secret:
+```bash
+openssl rand -base64 32
+```
+
+### 3. Setup Convex
+
+```bash
+cd apps/web
+bunx convex dev
+```
+
+This will:
+- Create a new Convex project (first time)
+- Generate schema and deploy functions
+- Start Convex development server
+
+### 4. Start Development Server
+
+From the root directory:
+
+```bash
 bun dev
+```
 
-# Run web app only
+Or run just the web app:
+
+```bash
 cd apps/web
 bun dev
-
-# Preview email templates
-bun email:dev
 ```
+
+Visit [http://localhost:3810](http://localhost:3810)
 
 ## Development
 
 ### Web App (Next.js)
 
-The main application with Better Auth integration.
-
 **Location**: `apps/web/`
-
-**Features**:
-- Better Auth with PostgreSQL
-- Email/Password authentication
-- Magic Link authentication
-- Organization management
-- Multi-language email support (en/de)
-
-**Environment Variables**:
-```env
-DATABASE_URL=postgresql://...
-BETTER_AUTH_SECRET=your-secret
-BETTER_AUTH_URL=http://localhost:3810
-RESEND_API_KEY=re_xxx
-RESEND_FROM_EMAIL=noreply@example.com
-EMAIL_LOCALE=en  # or 'de' for German
-```
 
 **Commands**:
 ```bash
@@ -69,7 +141,7 @@ bun lint         # Run ESLint
 
 ### Email Templates Package
 
-Shared React Email templates for all authentication flows.
+Shared React Email templates for authentication flows.
 
 **Location**: `packages/emails/`
 
@@ -80,190 +152,150 @@ Shared React Email templates for all authentication flows.
 - `invite.tsx` - Organization invitations
 - `change-email.tsx` - Email change confirmation
 
-**Components**:
-- `EmailLayout` - Consistent email layout with header/footer
-- `EmailButton` - Styled CTA button
-- `OtpCode` - Formatted OTP code display
-
-**Languages**: English (en), German (de)
-
 **Commands**:
 ```bash
-cd packages/emails
-bun dev          # Preview emails on port 3811
-bun export       # Export static HTML emails
+bun email:dev        # Preview emails on port 3811
+bun email:export     # Export static HTML
 ```
 
 **Preview URL**: http://localhost:3811
-
-## Email Integration
-
-### Using Email Templates
-
-All email templates are automatically used by Better Auth through the `@repo/emails` package:
-
-```typescript
-import { MagicLinkEmail, ResetPasswordEmail } from '@repo/emails'
-import { render } from '@react-email/render'
-
-// Render email to HTML
-const emailHtml = await render(
-  MagicLinkEmail({
-    locale: 'en',  // or 'de'
-    siteUrl: 'https://example.com',
-    tokenHash: 'abc123',
-    token: 'SPARO-NDIGO-AMURT-SECAN',
-  })
-)
-```
-
-### Locale Configuration
-
-Set the email locale via environment variable:
-```env
-EMAIL_LOCALE=en  # English (default)
-# or
-EMAIL_LOCALE=de  # German
-```
-
-### Customizing Templates
-
-1. Edit templates in `packages/emails/emails/auth/`
-2. Update styles in `packages/emails/emails/auth/styles.ts`
-3. Changes are reflected immediately in preview and Next.js app
 
 ## Turborepo Commands
 
 From the root directory:
 
 ```bash
-# Run dev servers for all apps
-bun dev
-
-# Build all apps
-bun build
-
-# Lint all apps
-bun lint
-
-# Preview emails only
-bun email:dev
-
-# Export email templates
-bun email:export
-
-# Clean all build artifacts
-bun clean
+bun dev              # Run all dev servers
+bun build            # Build all apps
+bun lint             # Lint all apps
+bun email:dev        # Preview emails only
+bun email:export     # Export email templates
+bun clean            # Clean all build artifacts
 ```
 
-## Technology Stack
+## Authentication Usage
 
-### Apps
-- **Next.js 15** - React framework with App Router
-- **Better Auth** - Authentication system
-- **PostgreSQL** - Database (via pg)
-- **Resend** - Email delivery service
-- **Tailwind CSS** - Styling
-- **Shadcn/ui** - UI components
+### Client-Side (React Components)
 
-### Packages
-- **React Email** - Email template framework
-- **@react-email/components** - Email components
-- **React 19** - React library
-
-### Tooling
-- **Bun** - Fast JavaScript runtime & package manager
-- **Turborepo** - Monorepo build system
-- **TypeScript** - Type safety
-- **ESLint** - Code linting
-
-## Better Auth Configuration
-
-Better Auth is configured in `apps/web/src/lib/auth.ts` with:
-
-- Email/Password authentication
-- Email verification
-- Magic Link authentication
-- Password reset
-- Organization management
-- Multi-language email support
-
-All email callbacks automatically use the React Email templates.
-
-## Package Workspace
-
-This monorepo uses Bun workspaces. The emails package is referenced as `@repo/emails` in the web app:
-
-```json
-{
-  "dependencies": {
-    "@repo/emails": "workspace:*"
-  }
-}
-```
-
-## Adding New Email Templates
-
-1. Create template in `packages/emails/emails/auth/`:
 ```tsx
-// my-email.tsx
-import { EmailLayout } from './components/EmailLayout'
+"use client"
 
-export interface MyEmailProps {
-  locale: 'en' | 'de'
-  customProp: string
-}
+import { useSession, signIn, signOut } from '@/lib/auth-client'
 
-export const MyEmail = ({ locale, customProp }: MyEmailProps) => {
+export function MyComponent() {
+  const { data: session, isPending } = useSession()
+
+  if (isPending) return <div>Loading...</div>
+
+  if (!session?.user) {
+    return <button onClick={() => signIn.email({
+      email: 'user@example.com',
+      password: 'password'
+    })}>
+      Sign In
+    </button>
+  }
+
   return (
-    <EmailLayout previewText="My Email" locale={locale}>
-      {/* Your email content */}
-    </EmailLayout>
+    <div>
+      <p>Welcome, {session.user.email}</p>
+      <button onClick={() => signOut()}>Sign Out</button>
+    </div>
   )
 }
-
-export default MyEmail
 ```
 
-2. Export from `packages/emails/emails/index.ts`:
-```typescript
-export { MyEmail } from './auth/my-email'
-export type { MyEmailProps } from './auth/my-email'
-```
+### Server-Side (Server Components)
 
-3. Add export to `packages/emails/package.json`:
-```json
-{
-  "exports": {
-    "./auth/my-email": "./emails/auth/my-email.tsx"
+```tsx
+import { auth } from '@/lib/auth'
+import { headers } from 'next/headers'
+
+export default async function Page() {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  })
+
+  if (!session?.user) {
+    return <div>Not authenticated</div>
   }
+
+  return <div>Welcome, {session.user.email}</div>
 }
 ```
 
-4. Use in `apps/web/src/lib/email.ts`:
-```typescript
-import { MyEmail } from '@repo/emails'
+## Deployment to Vercel
 
-const emailHtml = await render(
-  MyEmail({ locale: 'en', customProp: 'value' })
-)
+### 1. Push to GitHub
+
+```bash
+git add .
+git commit -m "Ready for deployment"
+git push -u origin main
 ```
 
-## Troubleshooting
+### 2. Import to Vercel
 
-### Emails not rendering
-- Check `@repo/emails` is installed: `bun install`
-- Verify imports in `apps/web/src/lib/email.ts`
-- Check email preview at http://localhost:3811
+- Go to [vercel.com](https://vercel.com)
+- Click "Import Project"
+- Select your repository
+- Vercel will auto-detect the monorepo structure
 
-### TypeScript errors
-- Ensure all packages are built: `bun build`
-- Restart TypeScript server in your editor
+### 3. Configure Environment Variables
 
-### Database connection issues
-- Verify `DATABASE_URL` in `.env`
-- Ensure PostgreSQL is running
-- Check Better Auth database tables exist
+Add these in Vercel dashboard:
+- `BETTER_AUTH_SECRET`
+- `BETTER_AUTH_URL` (your Vercel URL)
+- `CONVEX_DEPLOYMENT`
+- `NEXT_PUBLIC_CONVEX_URL`
+- `RESEND_API_KEY`
+- `RESEND_FROM_EMAIL`
+- `NEXT_PUBLIC_APP_URL` (your Vercel URL)
+- `EMAIL_LOCALE`
+
+### 4. Deploy
+
+Vercel will automatically deploy using the monorepo configuration in `vercel.json`:
+- Installs dependencies at root with `bun install`
+- Builds the web app with `cd apps/web && bun run build`
+- Outputs to `apps/web/.next`
+
+## Email Configuration
+
+**Resend (Recommended)**:
+1. Sign up at [resend.com](https://resend.com)
+2. Get API key
+3. Add domain and verify
+4. Set `RESEND_API_KEY` and `RESEND_FROM_EMAIL`
+
+All email templates are automatically used via the `@repo/emails` workspace package.
+
+## Key Features
+
+- ✅ Email/Password Authentication
+- ✅ Magic Link Authentication
+- ✅ Email Verification
+- ✅ Password Reset
+- ✅ User Profile Management
+- ✅ Organization Management (Multi-tenant)
+- ✅ Member Invitations & Roles
+- ✅ Admin Panel & User Management
+- ✅ User Impersonation
+- ✅ Audit Trail & Activity Logging
+- ✅ Internationalization (i18n)
+- ✅ Session Management
+- ✅ Route Protection
+- ✅ Turborepo Monorepo
+- ✅ Shared Email Templates
+
+## Resources
+
+- [Better Auth Documentation](https://www.better-auth.com/docs)
+- [Convex Documentation](https://docs.convex.dev)
+- [Next.js Documentation](https://nextjs.org/docs)
+- [Turborepo Documentation](https://turbo.build/repo/docs)
+- [shadcn/ui](https://ui.shadcn.com)
+- [Vercel Deployment](https://vercel.com/docs)
 
 ## License
 

@@ -1,8 +1,8 @@
 "use client"
 
+
 import { useEffect, useState } from "react"
 import { organization } from "@/lib/auth-client"
-import { useTranslations } from "next-intl"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -22,7 +22,6 @@ interface Organization {
 }
 
 export default function OrganizationsPage() {
-  const t = useTranslations('organizations')
   const [organizations, setOrganizations] = useState<Organization[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -34,7 +33,7 @@ export default function OrganizationsPage() {
           setOrganizations(result.data as any)
         }
       } catch (error) {
-        // Error handled silently - user will see empty state
+        console.error("Failed to fetch organizations:", error)
       } finally {
         setLoading(false)
       }
@@ -74,11 +73,11 @@ export default function OrganizationsPage() {
       <div className="container mx-auto px-4 py-8 max-w-6xl space-y-6">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold">{t('title')}</h1>
-            <p className="text-muted-foreground">{t('myOrganizations')}</p>
+            <h1 className="text-3xl font-bold">Organizations</h1>
+            <p className="text-muted-foreground">Manage your teams and workspaces</p>
           </div>
           <Link href="/organizations/create">
-            <Button>{t('create')}</Button>
+            <Button>Create Organization</Button>
           </Link>
         </div>
 
@@ -86,12 +85,12 @@ export default function OrganizationsPage() {
           <Card>
             <CardContent className="flex flex-col items-center justify-center py-12">
               <div className="text-center space-y-3">
-                <h3 className="text-lg font-semibold">{t('noOrganizations')}</h3>
+                <h3 className="text-lg font-semibold">No organizations yet</h3>
                 <p className="text-sm text-muted-foreground max-w-sm">
-                  {t('createDescription')}
+                  Create your first organization to start collaborating with your team.
                 </p>
                 <Link href="/organizations/create">
-                  <Button>{t('create')}</Button>
+                  <Button>Create Organization</Button>
                 </Link>
               </div>
             </CardContent>
@@ -108,7 +107,7 @@ export default function OrganizationsPage() {
                         <CardDescription>@{org.slug}</CardDescription>
                       </div>
                       <Badge variant={getRoleBadgeVariant(org.role)}>
-                        {t(org.role as 'owner' | 'admin' | 'member')}
+                        {org.role}
                       </Badge>
                     </div>
                   </CardHeader>
@@ -116,12 +115,12 @@ export default function OrganizationsPage() {
                     <div className="space-y-2 text-sm">
                       {org.memberCount !== undefined && (
                         <div className="flex justify-between">
-                          <span className="text-muted-foreground">{t('members')}</span>
+                          <span className="text-muted-foreground">Members</span>
                           <span className="font-medium">{org.memberCount}</span>
                         </div>
                       )}
                       <div className="flex justify-between">
-                        <span className="text-muted-foreground">{t('organizationCreated').split(' ')[0]}</span>
+                        <span className="text-muted-foreground">Created</span>
                         <span className="font-medium">
                           {new Date(org.createdAt).toLocaleDateString()}
                         </span>
