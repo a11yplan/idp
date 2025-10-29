@@ -1,10 +1,10 @@
 "use client"
 
 import { AutumnProvider } from "autumn-js/react"
-import { OrganizationProvider } from "@/contexts/organization-context"
-import { Navbar } from "@/components/navigation/navbar"
-import { Breadcrumb } from "@/components/navigation/breadcrumb"
-import { ToasterWrapper } from "@/components/toaster-wrapper"
+import { OrganizationProvider } from '../../contexts/organization-context'
+import { Navbar } from '../navigation/navbar'
+import { Breadcrumb } from '../navigation/breadcrumb'
+import { ToasterWrapper } from '../toaster-wrapper'
 
 interface ClientLayoutProps {
   children: React.ReactNode

@@ -1,11 +1,9 @@
-"use client"
-
 import { useEffect, useState } from "react"
-import { authClient } from "@/lib/auth-client"
-import { Badge } from "@/components/ui/badge"
-import Link from "next/link"
+import { authClient } from '../../lib/auth-client'
+import { Badge } from '../ui/badge'
+import { Link } from "@tanstack/react-router"
 import { Bell } from "lucide-react"
-import { useOrganization } from "@/contexts/organization-context"
+import { useOrganization } from '../../contexts/organization-context'
 
 export function InvitationBadge() {
   const [count, setCount] = useState(0)
@@ -47,7 +45,7 @@ export function InvitationBadge() {
 
   return (
     <Link
-      href="/invitations"
+      to="/invitations"
       className="relative flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
     >
       <Bell className="h-4 w-4" />

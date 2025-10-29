@@ -1,7 +1,6 @@
-import Image from "next/image"
-import Link from "next/link"
-import { config } from "@/lib/config"
-import { cn } from "@/lib/utils"
+import { Link } from "@tanstack/react-router"
+import { config } from '../../lib/config'
+import { cn } from "../../lib/utils"
 
 interface AppLogoProps {
   /** Logo size variant */
@@ -43,7 +42,7 @@ export function AppLogo({
     <div className={cn('flex items-center', wrapper, className)}>
       {/* Logo Icon or Fallback */}
       {config.appLogo ? (
-        <Image
+        <img
           src={config.appLogo}
           alt={config.appName}
           width={pixelSize.width}
@@ -72,7 +71,7 @@ export function AppLogo({
 
   if (linkToHome) {
     return (
-      <Link href="/" className="flex items-center">
+      <Link to="/" className="flex items-center">
         {logoElement}
       </Link>
     )

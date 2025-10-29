@@ -1,7 +1,5 @@
-"use client"
-
-import { authClient } from "@/lib/auth-client"
-import { useRouter } from "next/navigation"
+import { authClient } from '../../lib/auth-client'
+import { useNavigate } from "@tanstack/react-router"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,13 +7,13 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+} from '../ui/dropdown-menu'
+import { Avatar, AvatarFallback } from '../ui/avatar'
 import { User, Settings, LogOut } from "lucide-react"
 
 export function UserMenu() {
   const { data: session } = authClient.useSession()
-  const router = useRouter()
+  const navigate = useNavigate()
 
   if (!session?.user) {
     return null
@@ -23,8 +21,7 @@ export function UserMenu() {
 
   const handleSignOut = async () => {
     await authClient.signOut()
-    router.push("/login")
-    router.refresh()
+    navigate({ to: "/login" })
   }
 
   const userInitials = session.user.name
@@ -55,11 +52,11 @@ export function UserMenu() {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => router.push('/profile')}>
+        <DropdownMenuItem onClick={() => navigate({ to: '/profile' })}>
           <User className="mr-2 h-4 w-4" />
           <span>Profile</span>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => router.push('/profile/settings')}>
+        <DropdownMenuItem onClick={() => navigate({ to: '/profile/settings' })}>
           <Settings className="mr-2 h-4 w-4" />
           <span>Settings</span>
         </DropdownMenuItem>

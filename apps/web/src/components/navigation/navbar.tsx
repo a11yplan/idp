@@ -1,26 +1,21 @@
-"use client"
-
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { useTranslations } from 'next-intl'
-import { navItems } from "@/lib/navigation"
+import { Link, useLocation } from "@tanstack/react-router"
+import { navItems } from '../../lib/navigation'
 import { UserMenu } from "./user-menu"
 import { InvitationBadge } from "./invitation-badge"
-import { OrganizationSwitcher } from "@/components/organization/org-switcher"
-import { LanguageSwitcher } from "@/components/ui/language-switcher"
-import { AppLogo } from "@/components/ui/app-logo"
-import { useOrganization } from "@/contexts/organization-context"
-import { authClient } from "@/lib/auth-client"
-import { Button } from "@/components/ui/button"
+import { OrganizationSwitcher } from '../organization/org-switcher'
+import { LanguageSwitcher } from '../ui/language-switcher'
+import { AppLogo } from '../ui/app-logo'
+import { useOrganization } from '../../contexts/organization-context'
+import { authClient } from '../../lib/auth-client'
+import { Button } from '../ui/button'
 import { Menu, X } from "lucide-react"
 import { useState } from "react"
-import { cn } from "@/lib/utils"
-import { config } from "@/lib/config"
-import { canAccessAdmin, isBetterAuthAdmin } from "@/lib/rbac"
+import { cn } from '../../lib/utils'
+import { config } from '../../lib/config'
+import { canAccessAdmin, isBetterAuthAdmin } from '../../lib/rbac'
 
 export function Navbar() {
-  const pathname = usePathname()
-  const t = useTranslations('nav')
+  const location = useLocation()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   // Use Better Auth's session hook
@@ -28,6 +23,7 @@ export function Navbar() {
   const { organizations } = useOrganization()
 
   // Strip locale from pathname for comparisons
+  const pathname = location.pathname
   const pathWithoutLocale = pathname.replace(/^\/(en|de)/, '') || '/'
 
   // Don't show navbar on login/signup pages
@@ -80,25 +76,20 @@ export function Navbar() {
             {/* Desktop Navigation - Only show for admin users */}
             {isBetterAdmin && (
               <div className="hidden md:flex md:gap-6 md:items-center">
-                {visibleNavItems.map((item) => {
-                  // Get translation key from href (e.g., /profile -> profile)
-                  const translationKey = item.href === '/' ? 'home' : item.href.slice(1).split('/')[0]
-
-                  return (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      className={cn(
-                        "text-sm font-medium transition-colors hover:text-primary",
-                        isActiveRoute(item.href)
-                          ? "text-foreground"
-                          : "text-muted-foreground"
-                      )}
-                    >
-                      {t(translationKey as any)}
-                    </Link>
-                  )
-                })}
+                {visibleNavItems.map((item) => (
+                  <Link
+                    key={item.href}
+                    to={item.href}
+                    className={cn(
+                      "text-sm font-medium transition-colors hover:text-primary",
+                      isActiveRoute(item.href)
+                        ? "text-foreground"
+                        : "text-muted-foreground"
+                    )}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
                 {config.features.organizations && <OrganizationSwitcher />}
               </div>
             )}
@@ -132,25 +123,21 @@ export function Navbar() {
         {isBetterAdmin && mobileMenuOpen && (
           <div className="border-t py-4 md:hidden">
             <div className="flex flex-col gap-4">
-              {visibleNavItems.map((item) => {
-                const translationKey = item.href === '/' ? 'home' : item.href.slice(1).split('/')[0]
-
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className={cn(
-                      "text-sm font-medium transition-colors hover:text-primary",
-                      isActiveRoute(item.href)
-                        ? "text-foreground"
-                        : "text-muted-foreground"
-                    )}
-                  >
-                    {t(translationKey as any)}
-                  </Link>
-                )
-              })}
+              {visibleNavItems.map((item) => (
+                <Link
+                  key={item.href}
+                  to={item.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={cn(
+                    "text-sm font-medium transition-colors hover:text-primary",
+                    isActiveRoute(item.href)
+                      ? "text-foreground"
+                      : "text-muted-foreground"
+                  )}
+                >
+                  {item.label}
+                </Link>
+              ))}
             </div>
           </div>
         )}

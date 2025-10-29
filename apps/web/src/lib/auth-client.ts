@@ -23,9 +23,7 @@ import { magicLinkClient, organizationClient, adminClient } from 'better-auth/cl
  * to ensure proper integration between Better Auth and Autumn.js.
  */
 export const authClient = createAuthClient({
-  baseURL: typeof window !== 'undefined'
-    ? window.location.origin
-    : process.env.NEXT_PUBLIC_BETTER_AUTH_URL || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
+  baseURL: process.env.BETTER_AUTH_URL || 'http://localhost:3810',
 
   plugins: [
     magicLinkClient(),

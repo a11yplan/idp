@@ -1,9 +1,9 @@
 "use client"
 
 import { useCustomer } from "autumn-js/react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
-import { Badge } from "@/components/ui/badge"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
+import { Progress } from '../ui/progress'
+import { Badge } from '../ui/badge'
 
 interface UsageDisplayProps {
   featureId: string

@@ -1,14 +1,11 @@
-"use client"
-
-import { useLocale } from 'next-intl'
-import { useRouter, usePathname } from 'next/navigation'
-import { Button } from '@/components/ui/button'
+import { useNavigate, useLocation } from '@tanstack/react-router'
+import { Button } from './button'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+} from './dropdown-menu'
 import { Languages } from 'lucide-react'
 
 const languages = [
@@ -17,36 +14,41 @@ const languages = [
 ] as const
 
 export function LanguageSwitcher() {
-  const locale = useLocale()
-  const router = useRouter()
-  const pathname = usePathname()
+  const navigate = useNavigate()
+  const location = useLocation()
+  const pathname = location.pathname
+
+  // Detect locale from pathname
+  const segments = pathname.split('/')
+  const hasLocalePrefix = segments[1] === 'de' || segments[1] === 'en'
+  const locale = hasLocalePrefix ? segments[1] : 'en'
 
   const currentLanguage = languages.find((lang) => lang.code === locale) || languages[0]
 
   const switchLocale = (newLocale: string) => {
     // Get the current path without the locale prefix
-    const segments = pathname.split('/')
-    const hasLocalePrefix = segments[1] === 'de' || segments[1] === 'en'
+    const pathSegments = pathname.split('/')
+    const currentHasLocale = pathSegments[1] === 'de' || pathSegments[1] === 'en'
 
     let newPath: string
     if (newLocale === 'en') {
       // Remove locale prefix for English (default locale)
-      if (hasLocalePrefix) {
-        newPath = '/' + segments.slice(2).join('/')
+      if (currentHasLocale) {
+        newPath = '/' + pathSegments.slice(2).join('/')
       } else {
         newPath = pathname
       }
     } else {
       // Add /de prefix for German
-      if (hasLocalePrefix) {
-        segments[1] = newLocale
-        newPath = segments.join('/')
+      if (currentHasLocale) {
+        pathSegments[1] = newLocale
+        newPath = pathSegments.join('/')
       } else {
         newPath = `/${newLocale}${pathname}`
       }
     }
 
-    router.push(newPath || '/')
+    navigate({ to: newPath || '/' })
   }
 
   return (

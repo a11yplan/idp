@@ -1,7 +1,7 @@
 "use client"
 
 import React, { createContext, useContext, useEffect, useState } from "react"
-import { authClient } from "@/lib/auth-client"
+import { authClient } from '../lib/auth-client'
 import { useOrganization } from "./organization-context"
 
 interface Team {

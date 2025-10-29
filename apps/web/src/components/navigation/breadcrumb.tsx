@@ -1,8 +1,5 @@
-"use client"
-
-import { usePathname } from "next/navigation"
-import Link from "next/link"
-import { generateBreadcrumbs } from "@/lib/navigation"
+import { useLocation, Link } from "@tanstack/react-router"
+import { generateBreadcrumbs } from '../../lib/navigation'
 import { ChevronRight, Home } from "lucide-react"
 
 interface BreadcrumbProps {
@@ -10,7 +7,8 @@ interface BreadcrumbProps {
 }
 
 export function Breadcrumb({ dynamicLabels }: BreadcrumbProps) {
-  const pathname = usePathname()
+  const location = useLocation()
+  const pathname = location.pathname
 
   // Don't show breadcrumbs on login/signup pages
   if (pathname === '/login' || pathname === '/signup') {
@@ -44,7 +42,7 @@ export function Breadcrumb({ dynamicLabels }: BreadcrumbProps) {
                   </span>
                 ) : (
                   <Link
-                    href={crumb.href}
+                    to={crumb.href}
                     className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
                   >
                     {isHome && <Home className="h-4 w-4" />}

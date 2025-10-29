@@ -1,5 +1,5 @@
-import { LanguageSwitcher } from "@/components/ui/language-switcher"
-import { AppLogo } from "@/components/ui/app-logo"
+import { LanguageSwitcher } from '../ui/language-switcher'
+import { AppLogo } from '../ui/app-logo'
 
 interface AuthLayoutProps {
   children: React.ReactNode

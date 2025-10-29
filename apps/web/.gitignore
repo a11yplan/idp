@@ -9,9 +9,14 @@
 # testing
 /coverage
 
-# next.js
+# next.js (keep during migration)
 /.next/
 /out/
+
+# tanstack start / vinxi
+/.vinxi
+/.output
+/src/routeTree.gen.ts
 
 # production
 /build
@@ -35,3 +40,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# turbo
+.turbo

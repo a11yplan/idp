@@ -1,8 +1,8 @@
 "use client"
 
-import { authClient } from "@/lib/auth-client"
-import { Button } from "@/components/ui/button"
-import type { ButtonProps } from "@/components/ui/button"
+import { authClient } from '../../lib/auth-client'
+import { Button } from '../ui/button'
+import type { ButtonProps } from '../ui/button'
 
 interface SignOutButtonProps extends ButtonProps {
   children: React.ReactNode

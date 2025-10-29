@@ -1,12 +1,10 @@
-"use client"
-
 import { useState } from "react"
-import { authClient } from "@/lib/auth-client"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { authClient } from '../../lib/auth-client'
+import { Link } from "@tanstack/react-router"
+import { Button } from '../ui/button'
+import { Input } from '../ui/input'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
+import { Badge } from '../ui/badge'
 import {
   Table,
   TableBody,
@@ -14,14 +12,14 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from '../ui/table'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from '../ui/select'
 
 interface User {
   id: string
@@ -222,7 +220,7 @@ export function AdminUsersTable({ initialUsers, currentUserId }: AdminUsersTable
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
-                          <Link href={`/admin/users/${user.id}`}>
+                          <Link to={`/admin/users/${user.id}`}>
                             <Button variant="outline" size="sm">
                               View
                             </Button>

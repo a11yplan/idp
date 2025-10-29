@@ -1,4 +1,4 @@
-import { defaultConfig, type AppConfig } from '@/config/app.config'
+import { defaultConfig, type AppConfig } from '../config/app.config'
 
 /**
  * Get runtime configuration

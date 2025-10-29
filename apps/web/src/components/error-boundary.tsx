@@ -1,8 +1,8 @@
 "use client"
 
 import React, { Component, ReactNode } from 'react'
-import { Button } from '@/components/ui/button'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Button } from './ui/button'
+import { Alert, AlertDescription, AlertTitle } from './ui/alert'
 import { AlertCircle } from 'lucide-react'
 
 interface Props {

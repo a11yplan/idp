@@ -1,18 +1,15 @@
-"use client"
-
 import { useEffect, useState } from "react"
-import { authClient } from "@/lib/auth-client"
+import { authClient } from '../../lib/auth-client'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from '../ui/select'
 import { Building2, Plus } from "lucide-react"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { useRouter } from "next/navigation"
+import { Link, useNavigate } from "@tanstack/react-router"
+import { Button } from '../ui/button'
 
 interface Organization {
   id: string
@@ -24,7 +21,7 @@ interface Organization {
 const ACTIVE_ORG_KEY = "activeOrganizationId"
 
 export function OrganizationSwitcher() {
-  const router = useRouter()
+  const navigate = useNavigate()
   const [organizations, setOrganizations] = useState<Organization[]>([])
   const [activeOrgId, setActiveOrgId] = useState<string>("")
   const [loading, setLoading] = useState(true)
@@ -61,7 +58,7 @@ export function OrganizationSwitcher() {
 
   const handleSwitch = async (orgId: string) => {
     if (orgId === "create") {
-      router.push("/organizations/create")
+      navigate({ to: "/organizations/create" })
       return
     }
 
@@ -73,8 +70,7 @@ export function OrganizationSwitcher() {
       // Sync with server-side session
       await authClient.organization.setActive({ organizationId: orgId })
 
-      // Refresh the page to update organization context
-      router.refresh()
+      // TanStack Router handles refresh automatically
     } catch (error: any) {
       console.error("Failed to switch organization:", error)
     }
@@ -87,7 +83,7 @@ export function OrganizationSwitcher() {
 
   if (organizations.length === 0) {
     return (
-      <Link href="/organizations/create">
+      <Link to="/organizations/create">
         <Button variant="outline" size="sm">
           <Plus className="h-4 w-4 mr-2" />
           Create Organization
@@ -125,7 +121,7 @@ export function OrganizationSwitcher() {
             </SelectItem>
           ))}
           <div className="border-t mt-2 pt-2">
-            <Link href="/organizations/create">
+            <Link to="/organizations/create">
               <Button
                 variant="ghost"
                 size="sm"

@@ -1,7 +1,5 @@
-"use client"
-
-import { useTeam } from "@/contexts/team-context"
-import { Button } from "@/components/ui/button"
+import { useTeam } from '../../contexts/team-context'
+import { Button } from '../ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,13 +7,13 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from '../ui/dropdown-menu'
 import { Check, ChevronDown, Users } from "lucide-react"
-import { useRouter } from "next/navigation"
-import { useOrganization } from "@/contexts/organization-context"
+import { useNavigate } from "@tanstack/react-router"
+import { useOrganization } from '../../contexts/organization-context'
 
 export function TeamSwitcher() {
-  const router = useRouter()
+  const navigate = useNavigate()
   const { activeOrganization } = useOrganization()
   const { activeTeam, teams, setActiveTeam, isLoading } = useTeam()
 
@@ -62,7 +60,7 @@ export function TeamSwitcher() {
         ))}
         <DropdownMenuSeparator />
         <DropdownMenuItem
-          onClick={() => router.push(`/organizations/${activeOrganization.id}/teams`)}
+          onClick={() => navigate({ to: `/organizations/${activeOrganization.id}/teams` })}
           className="cursor-pointer"
         >
           Manage Teams

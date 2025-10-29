@@ -1,14 +1,12 @@
-"use client"
-
 import { useState } from "react"
-import { authClient } from "@/lib/auth-client"
-import { useRouter } from "next/navigation"
-import { BackButton } from "@/components/navigation/back-button"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Separator } from "@/components/ui/separator"
+import { authClient } from '../../lib/auth-client'
+import { useNavigate } from "@tanstack/react-router"
+import { BackButton } from '../navigation/back-button'
+import { Button } from '../ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
+import { Badge } from '../ui/badge'
+import { Alert, AlertDescription } from '../ui/alert'
+import { Separator } from '../ui/separator'
 import {
   Dialog,
   DialogContent,
@@ -17,16 +15,16 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
+} from '../ui/dialog'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
+} from '../ui/select'
+import { Label } from '../ui/label'
+import { Input } from '../ui/input'
 
 interface User {
   id: string
@@ -48,7 +46,7 @@ interface AdminUserDetailClientProps {
 }
 
 export function AdminUserDetailClient({ user: initialUser, currentUserId }: AdminUserDetailClientProps) {
-  const router = useRouter()
+  const navigate = useNavigate()
   const [user, setUser] = useState<User>(initialUser)
 
   // Role change dialog
@@ -132,8 +130,7 @@ export function AdminUserDetailClient({ user: initialUser, currentUserId }: Admi
     setDeleteLoading(true)
     try {
       await authClient.admin.removeUser({ userId: user.id })
-      router.push("/admin/users")
-      router.refresh()
+      navigate({ to: "/admin/users" })
     } catch (error: any) {
       alert(error.message || "Failed to delete user")
       setDeleteLoading(false)
@@ -146,7 +143,7 @@ export function AdminUserDetailClient({ user: initialUser, currentUserId }: Admi
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8 max-w-5xl space-y-6">
-        <BackButton href="/admin/users" />
+        <BackButton to="/admin/users" />
 
         <div>
           <h1 className="text-3xl font-bold">User Details</h1>
