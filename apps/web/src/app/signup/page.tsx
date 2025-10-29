@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { useTranslations } from "next-intl"
 import Link from "next/link"
 import { signUp, useSession } from "@/lib/auth-client"
+import { AuthLayout } from "@/components/layouts/auth-layout"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -61,8 +62,8 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <Card className="w-full max-w-md">
+    <AuthLayout>
+      <Card className="w-full">
         <CardHeader>
           <CardTitle>{t('signUpTitle')}</CardTitle>
           <CardDescription>
@@ -132,6 +133,6 @@ export default function SignupPage() {
           </p>
         </CardFooter>
       </Card>
-    </div>
+    </AuthLayout>
   )
 }

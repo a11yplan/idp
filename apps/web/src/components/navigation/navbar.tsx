@@ -1,7 +1,6 @@
 "use client"
 
 import Link from "next/link"
-import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { useTranslations } from 'next-intl'
 import { navItems } from "@/lib/navigation"
@@ -9,6 +8,7 @@ import { UserMenu } from "./user-menu"
 import { InvitationBadge } from "./invitation-badge"
 import { OrganizationSwitcher } from "@/components/organization/org-switcher"
 import { LanguageSwitcher } from "@/components/ui/language-switcher"
+import { AppLogo } from "@/components/ui/app-logo"
 import { useOrganization } from "@/contexts/organization-context"
 import { useAuth } from "@/components/providers/auth-provider"
 import { Button } from "@/components/ui/button"
@@ -43,6 +43,11 @@ export function Navbar() {
   const isAdmin = canAccessAdmin(session.user)
   const isBetterAdmin = isBetterAuthAdmin(session.user)
 
+  // Don't show navbar for non-admin users (they see single card pages)
+  if (!isBetterAdmin) {
+    return null
+  }
+
   // Filter nav items based on auth, admin status, and feature flags
   const visibleNavItems = navItems.filter(item => {
     if (item.requiresAdmin && !isAdmin) return false
@@ -70,26 +75,7 @@ export function Navbar() {
         <div className="flex h-16 items-center justify-between">
           {/* Logo / Brand */}
           <div className="flex items-center gap-6">
-            <Link href="/" className="flex items-center gap-2">
-              {config.appLogo.endsWith('.svg') ? (
-                <Image
-                  src={config.appLogo}
-                  alt={config.appName}
-                  width={32}
-                  height={32}
-                  className="h-8 w-8"
-                />
-              ) : (
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                  <span className="text-lg font-bold">
-                    {config.appName.substring(0, 2).toUpperCase()}
-                  </span>
-                </div>
-              )}
-              <span className="hidden font-semibold sm:inline-block">
-                {config.appName}
-              </span>
-            </Link>
+            <AppLogo size="sm" showName linkToHome />
 
             {/* Desktop Navigation - Only show for admin users */}
             {isBetterAdmin && (

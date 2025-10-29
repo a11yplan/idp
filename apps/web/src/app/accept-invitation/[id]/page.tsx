@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { organization, useSession } from "@/lib/auth-client"
+import { AuthLayout } from "@/components/layouts/auth-layout"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription } from "@/components/ui/alert"
@@ -126,8 +127,8 @@ export default function AcceptInvitationPage() {
   // Loading state while checking session
   if (isPending || status === 'loading') {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Card className="w-full max-w-md">
+      <AuthLayout>
+        <Card className="w-full">
           <CardHeader>
             <CardTitle>Loading...</CardTitle>
             <CardDescription>Checking your invitation</CardDescription>
@@ -137,15 +138,15 @@ export default function AcceptInvitationPage() {
             <Skeleton className="h-4 w-3/4" />
           </CardContent>
         </Card>
-      </div>
+      </AuthLayout>
     )
   }
 
   // Not logged in
   if (status === 'unauthorized') {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Card className="w-full max-w-md">
+      <AuthLayout>
+        <Card className="w-full">
           <CardHeader>
             <CardTitle>Welcome! 👋</CardTitle>
             <CardDescription>
@@ -168,15 +169,15 @@ export default function AcceptInvitationPage() {
             </div>
           </CardContent>
         </Card>
-      </div>
+      </AuthLayout>
     )
   }
 
   // Processing
   if (status === 'processing') {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Card className="w-full max-w-md">
+      <AuthLayout>
+        <Card className="w-full">
           <CardHeader>
             <CardTitle>Accepting Invitation...</CardTitle>
             {organizationName && (
@@ -192,15 +193,15 @@ export default function AcceptInvitationPage() {
             </p>
           </CardContent>
         </Card>
-      </div>
+      </AuthLayout>
     )
   }
 
   // Success
   if (status === 'success') {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Card className="w-full max-w-md">
+      <AuthLayout>
+        <Card className="w-full">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <span className="text-2xl">✅</span>
@@ -230,14 +231,14 @@ export default function AcceptInvitationPage() {
             </div>
           </CardContent>
         </Card>
-      </div>
+      </AuthLayout>
     )
   }
 
   // Error
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <Card className="w-full max-w-md">
+    <AuthLayout>
+      <Card className="w-full">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <span className="text-2xl">❌</span>
@@ -270,6 +271,6 @@ export default function AcceptInvitationPage() {
           </div>
         </CardContent>
       </Card>
-    </div>
+    </AuthLayout>
   )
 }
