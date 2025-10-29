@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { organization } from "@/lib/auth-client"
+import { authClient } from "@/lib/auth-client"
 import { useTranslations } from "next-intl"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -29,7 +29,7 @@ export default function OrganizationsPage() {
   useEffect(() => {
     const fetchOrganizations = async () => {
       try {
-        const result = await organization.list()
+        const result = await authClient.organization.list()
         if (result.data) {
           setOrganizations(result.data as any)
         }

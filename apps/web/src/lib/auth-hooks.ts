@@ -5,7 +5,7 @@
  * Use these for common auth-related checks in your components
  */
 
-import { useSession } from './auth-client'
+import { authClient } from './auth-client'
 
 /**
  * Hook to check if user is authenticated
@@ -26,7 +26,7 @@ import { useSession } from './auth-client'
  * ```
  */
 export function useIsAuthenticated(): boolean {
-  const { data: session, isPending } = useSession()
+  const { data: session, isPending } = authClient.useSession()
   return !isPending && !!session?.user
 }
 
@@ -49,7 +49,7 @@ export function useIsAuthenticated(): boolean {
  * ```
  */
 export function useIsAdmin(): boolean {
-  const { data: session, isPending } = useSession()
+  const { data: session, isPending } = authClient.useSession()
 
   if (isPending || !session?.user) return false
 

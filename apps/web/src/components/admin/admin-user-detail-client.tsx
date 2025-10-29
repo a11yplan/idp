@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { admin } from "@/lib/auth-client"
+import { authClient } from "@/lib/auth-client"
 import { useRouter } from "next/navigation"
 import { BackButton } from "@/components/navigation/back-button"
 import { Button } from "@/components/ui/button"
@@ -69,7 +69,7 @@ export function AdminUserDetailClient({ user: initialUser, currentUserId }: Admi
   const handleChangeRole = async () => {
     setRoleLoading(true)
     try {
-      await admin.setRole({
+      await authClient.admin.setRole({
         userId: user.id,
         role: newRole,
       })
@@ -91,7 +91,7 @@ export function AdminUserDetailClient({ user: initialUser, currentUserId }: Admi
 
     setBanLoading(true)
     try {
-      await admin.banUser({
+      await authClient.admin.banUser({
         userId: user.id,
         banReason,
       })
@@ -108,7 +108,7 @@ export function AdminUserDetailClient({ user: initialUser, currentUserId }: Admi
 
   const handleUnbanUser = async () => {
     try {
-      await admin.unbanUser({ userId: user.id })
+      await authClient.admin.unbanUser({ userId: user.id })
       setUser((prev) => ({ ...prev, banned: false, banReason: null }))
     } catch (error: any) {
       alert(error.message || "Failed to unban user")
@@ -117,7 +117,7 @@ export function AdminUserDetailClient({ user: initialUser, currentUserId }: Admi
 
   const handleImpersonateUser = async () => {
     try {
-      await admin.impersonateUser({ userId: user.id })
+      await authClient.admin.impersonateUser({ userId: user.id })
       window.location.href = "/"
     } catch (error: any) {
       alert(error.message || "Failed to impersonate user")
@@ -131,7 +131,7 @@ export function AdminUserDetailClient({ user: initialUser, currentUserId }: Admi
 
     setDeleteLoading(true)
     try {
-      await admin.removeUser({ userId: user.id })
+      await authClient.admin.removeUser({ userId: user.id })
       router.push("/admin/users")
       router.refresh()
     } catch (error: any) {

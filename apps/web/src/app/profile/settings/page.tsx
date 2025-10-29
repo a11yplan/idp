@@ -2,7 +2,7 @@
 
 
 import { useState } from "react"
-import { useSession, updateUser, changePassword, changeEmail, deleteUser } from "@/lib/auth-client"
+import { authClient } from "@/lib/auth-client"
 import { useRouter } from "next/navigation"
 import { BackButton } from "@/components/navigation/back-button"
 import { Button } from "@/components/ui/button"
@@ -26,7 +26,7 @@ import {
 export const dynamic = 'force-dynamic'
 
 export default function ProfileSettingsPage() {
-  const { data: session, isPending } = useSession()
+  const { data: session, isPending } = authClient.useSession()
   const router = useRouter()
 
   // Profile form
@@ -75,7 +75,7 @@ export default function ProfileSettingsPage() {
 
     try {
       // Cast to any to allow additional fields (bio, phone) defined in auth config
-      await updateUser({
+      await authClient.updateUser({
         name,
         bio,
         phone,
@@ -107,7 +107,7 @@ export default function ProfileSettingsPage() {
     }
 
     try {
-      await changePassword({
+      await authClient.changePassword({
         currentPassword,
         newPassword,
         revokeOtherSessions: true,
@@ -130,7 +130,7 @@ export default function ProfileSettingsPage() {
     setEmailSuccess("")
 
     try {
-      await changeEmail({
+      await authClient.changeEmail({
         newEmail,
       })
       setEmailSuccess("Verification email sent! Check your inbox.")
@@ -149,7 +149,7 @@ export default function ProfileSettingsPage() {
 
     setDeleteLoading(true)
     try {
-      await deleteUser()
+      await authClient.deleteUser()
       router.push("/")
       router.refresh()
     } catch (error: any) {

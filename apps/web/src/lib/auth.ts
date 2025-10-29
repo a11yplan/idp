@@ -131,9 +131,12 @@ export const auth = betterAuth({
       allowUserToCreateOrganization: true,
       organizationLimit: 10, // Max organizations per user
 
-      // No teams - simplified organization structure
-      teamConfiguration: {
-        enabled: false,
+      // Teams enabled for advanced organization management
+      teams: {
+        enabled: true,
+        maximumTeams: 20, // Max teams per organization
+        maximumMembersPerTeam: 50, // Max members per team
+        allowRemovingAllTeams: false, // Prevent removing the last team
       },
 
       // Default roles: owner, admin, member

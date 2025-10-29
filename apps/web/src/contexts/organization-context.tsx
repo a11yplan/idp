@@ -1,7 +1,7 @@
 "use client"
 
 import React, { createContext, useContext, useEffect, useState } from "react"
-import { organization } from "@/lib/auth-client"
+import { authClient } from "@/lib/auth-client"
 
 interface Organization {
   id: string
@@ -29,7 +29,7 @@ export function OrganizationProvider({ children }: { children: React.ReactNode }
 
   const refreshOrganizations = async () => {
     try {
-      const result = await organization.list()
+      const result = await authClient.organization.list()
       if (result.data) {
         const orgs = (result.data as any[]).map((org: any) => ({
           id: org.id,
@@ -47,7 +47,7 @@ export function OrganizationProvider({ children }: { children: React.ReactNode }
           if (savedOrg) {
             setActiveOrganizationState(savedOrg)
             // Sync with server session
-            await organization.setActive({ organizationId: savedOrg.id })
+            await authClient.organization.setActive({ organizationId: savedOrg.id })
             return
           }
         }
@@ -58,12 +58,12 @@ export function OrganizationProvider({ children }: { children: React.ReactNode }
           setActiveOrganizationState(firstOrg)
           localStorage.setItem(ACTIVE_ORG_KEY, firstOrg.id)
           // Sync with server session
-          await organization.setActive({ organizationId: firstOrg.id })
+          await authClient.organization.setActive({ organizationId: firstOrg.id })
         } else {
           setActiveOrganizationState(null)
           localStorage.removeItem(ACTIVE_ORG_KEY)
           // Unset active organization in session
-          await organization.setActive({ organizationId: null })
+          await authClient.organization.setActive({ organizationId: null })
         }
       }
     } catch (error) {
@@ -83,7 +83,7 @@ export function OrganizationProvider({ children }: { children: React.ReactNode }
       localStorage.setItem(ACTIVE_ORG_KEY, org.id)
       // Sync with server session
       try {
-        await organization.setActive({ organizationId: org.id })
+        await authClient.organization.setActive({ organizationId: org.id })
       } catch (error) {
         console.error("Failed to set active organization in session:", error)
       }
@@ -91,7 +91,7 @@ export function OrganizationProvider({ children }: { children: React.ReactNode }
       localStorage.removeItem(ACTIVE_ORG_KEY)
       // Unset active organization in session
       try {
-        await organization.setActive({ organizationId: null })
+        await authClient.organization.setActive({ organizationId: null })
       } catch (error) {
         console.error("Failed to unset active organization in session:", error)
       }

@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { organization } from "@/lib/auth-client"
+import { authClient } from "@/lib/auth-client"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
 import { Bell } from "lucide-react"
@@ -25,7 +25,7 @@ export function InvitationBadge() {
 
   const fetchInvitationCount = async () => {
     try {
-      const result = await organization.listUserInvitations()
+      const result = await authClient.organization.listUserInvitations()
       if (result.data) {
         // Count only pending invitations
         const pending = (result.data as any[]).filter(

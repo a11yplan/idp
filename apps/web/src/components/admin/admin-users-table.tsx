@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { admin } from "@/lib/auth-client"
+import { authClient } from "@/lib/auth-client"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -52,7 +52,7 @@ export function AdminUsersTable({ initialUsers, currentUserId }: AdminUsersTable
     if (!reason) return
 
     try {
-      await admin.banUser({
+      await authClient.admin.banUser({
         userId,
         banReason: reason,
       })
@@ -68,7 +68,7 @@ export function AdminUsersTable({ initialUsers, currentUserId }: AdminUsersTable
 
   const handleUnbanUser = async (userId: string) => {
     try {
-      await admin.unbanUser({ userId })
+      await authClient.admin.unbanUser({ userId })
 
       // Update users list
       setUsers(users.map((u) =>
@@ -81,7 +81,7 @@ export function AdminUsersTable({ initialUsers, currentUserId }: AdminUsersTable
 
   const handleImpersonateUser = async (userId: string) => {
     try {
-      await admin.impersonateUser({ userId })
+      await authClient.admin.impersonateUser({ userId })
       window.location.href = "/"
     } catch (error: any) {
       alert(error.message || "Failed to impersonate user")

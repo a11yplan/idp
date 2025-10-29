@@ -2,7 +2,7 @@
 
 
 import { useEffect, useState } from "react"
-import { organization, authClient, useSession } from "@/lib/auth-client"
+import { authClient } from "@/lib/auth-client"
 import { useParams } from "next/navigation"
 import { BackButton } from "@/components/navigation/back-button"
 import { Button } from "@/components/ui/button"
@@ -43,22 +43,30 @@ interface Member {
     email: string
     image?: string
   }
+  teams?: string[] // Team IDs this member belongs to
+}
+
+interface Team {
+  id: string
+  name: string
 }
 
 export default function OrganizationMembersPage() {
   const params = useParams()
   const orgId = params.id as string
-  const { data: session } = useSession()
+  const { data: session } = authClient.useSession()
 
   const [members, setMembers] = useState<Member[]>([])
   const [loading, setLoading] = useState(true)
   const [userRole, setUserRole] = useState<string>("")
   const [pendingInvitations, setPendingInvitations] = useState<any[]>([])
+  const [teams, setTeams] = useState<Team[]>([])
 
   // Invite dialog
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false)
   const [inviteEmail, setInviteEmail] = useState("")
   const [inviteRole, setInviteRole] = useState<"member" | "owner" | "admin">("member")
+  const [inviteTeamId, setInviteTeamId] = useState<string>("")
   const [inviteLoading, setInviteLoading] = useState(false)
   const [inviteError, setInviteError] = useState("")
   const [inviteSuccess, setInviteSuccess] = useState("")
@@ -135,7 +143,7 @@ export default function OrganizationMembersPage() {
         // DEPRECATED: organization.list() doesn't include role property
         // Keeping this for debugging/comparison purposes only
         console.log('🔍 [Members] Checking organization.list() for comparison (not used for role)...')
-        const listResult = await organization.list()
+        const listResult = await authClient.organization.list()
         BetterAuthLogger.org.listResponse(listResult)
 
         if (listResult.data) {
@@ -143,6 +151,21 @@ export default function OrganizationMembersPage() {
           console.log('🔍 [Members] organization.list() response:', orgs)
           const userOrg = orgs.find((o: any) => o.id === orgId)
           console.log('⚠️ [Members] NOTE: organization.list() does NOT include role property:', userOrg)
+        }
+
+        // Fetch teams for the organization
+        const teamsResult = await authClient.organization.listTeams({
+          query: {
+            organizationId: orgId,
+          },
+        })
+
+        if (teamsResult.data) {
+          const teamsList = (teamsResult.data as any[]).map((t: any) => ({
+            id: t.id,
+            name: t.name,
+          }))
+          setTeams(teamsList)
         }
 
         // Fetch pending invitations for admins/owners using explicit GET
@@ -195,10 +218,11 @@ export default function OrganizationMembersPage() {
     console.log('📧 [Members] Attempting to invite member:', { orgId, email: inviteEmail, role: inviteRole })
 
     try {
-      const result = await organization.inviteMember({
+      const result = await authClient.organization.inviteMember({
         organizationId: orgId,
         email: inviteEmail,
         role: inviteRole,
+        ...(inviteTeamId && { teamId: inviteTeamId }),
       })
 
       console.log('📧 [Members] Invite member result:', result)
@@ -213,6 +237,7 @@ export default function OrganizationMembersPage() {
         setInviteSuccess("Invitation sent successfully!")
         setInviteEmail("")
         setInviteRole("member")
+        setInviteTeamId("")
 
         // Refresh invitations list using explicit GET
         const invitationsResult = await authClient.$fetch('/organization/list-invitations', {
@@ -255,7 +280,7 @@ export default function OrganizationMembersPage() {
 
     try {
       // Note: Method name should be organization.cancelInvitation as per docs
-      await organization.cancelInvitation({
+      await authClient.organization.cancelInvitation({
         invitationId,
       })
 
@@ -275,7 +300,7 @@ export default function OrganizationMembersPage() {
     console.log('🔄 [Members] Resending invitation:', { invitationId, email, role })
 
     try {
-      const result = await organization.inviteMember({
+      const result = await authClient.organization.inviteMember({
         organizationId: orgId, // Explicitly pass organizationId
         email,
         role,
@@ -306,7 +331,7 @@ export default function OrganizationMembersPage() {
     console.log('🗑️ [Members] Removing member:', userId)
 
     try {
-      await organization.removeMember({
+      await authClient.organization.removeMember({
         organizationId: orgId,
         memberIdOrEmail: userId,
       })
@@ -327,7 +352,7 @@ export default function OrganizationMembersPage() {
     console.log('🔄 [Members] Updating member role:', { userId, newRole })
 
     try {
-      await organization.updateMemberRole({
+      await authClient.organization.updateMemberRole({
         organizationId: orgId,
         memberId: userId,
         role: newRole,
@@ -462,6 +487,25 @@ export default function OrganizationMembersPage() {
                       </SelectContent>
                     </Select>
                   </div>
+
+                  {teams.length > 0 && (
+                    <div className="space-y-2">
+                      <Label htmlFor="team">Team (Optional)</Label>
+                      <Select value={inviteTeamId} onValueChange={setInviteTeamId}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a team" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="">No Team</SelectItem>
+                          {teams.map((t) => (
+                            <SelectItem key={t.id} value={t.id}>
+                              {t.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
 
                   {inviteError && (
                     <Alert variant="destructive">

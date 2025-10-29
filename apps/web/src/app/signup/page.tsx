@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useTranslations } from "next-intl"
 import Link from "next/link"
-import { signUp, useSession } from "@/lib/auth-client"
+import { authClient } from "@/lib/auth-client"
 import { AuthLayout } from "@/components/layouts/auth-layout"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -18,7 +18,7 @@ export default function SignupPage() {
   const t = useTranslations('auth')
   const tCommon = useTranslations('common')
   const router = useRouter()
-  const { data: session } = useSession()
+  const { data: session } = authClient.useSession()
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -40,7 +40,7 @@ export default function SignupPage() {
     setSuccess("")
 
     try {
-      const result = await signUp.email({
+      const result = await authClient.signUp.email({
         email,
         password,
         name,

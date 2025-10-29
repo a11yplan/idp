@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
-import { organization, useSession } from "@/lib/auth-client"
+import { authClient } from "@/lib/auth-client"
 import { AuthLayout } from "@/components/layouts/auth-layout"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -17,7 +17,7 @@ type Status = 'loading' | 'processing' | 'success' | 'error' | 'unauthorized'
 export default function AcceptInvitationPage() {
   const params = useParams()
   const router = useRouter()
-  const { data: session, isPending } = useSession()
+  const { data: session, isPending } = authClient.useSession()
   const invitationId = params.id as string
 
   const [status, setStatus] = useState<Status>('loading')
@@ -46,7 +46,7 @@ export default function AcceptInvitationPage() {
 
     try {
       // First, get invitation details to show organization name
-      const invitationResult = await organization.getInvitation({
+      const invitationResult = await authClient.organization.getInvitation({
         query: {
           id: invitationId,
         },
@@ -61,7 +61,7 @@ export default function AcceptInvitationPage() {
       }
 
       // Accept the invitation
-      const result = await organization.acceptInvitation({
+      const result = await authClient.organization.acceptInvitation({
         invitationId,
       })
 

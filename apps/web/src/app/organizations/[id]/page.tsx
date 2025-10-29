@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { organization } from "@/lib/auth-client"
+import { authClient } from "@/lib/auth-client"
 import { useTranslations } from "next-intl"
 import Link from "next/link"
 import { useParams } from "next/navigation"
@@ -20,6 +20,7 @@ interface OrganizationDetail {
   metadata?: any
   createdAt: Date
   members?: any[]
+  teamsCount?: number
 }
 
 export default function OrganizationDetailPage() {
@@ -31,11 +32,12 @@ export default function OrganizationDetailPage() {
   const [org, setOrg] = useState<OrganizationDetail | null>(null)
   const [loading, setLoading] = useState(true)
   const [userRole, setUserRole] = useState<string>("")
+  const [teamsCount, setTeamsCount] = useState(0)
 
   useEffect(() => {
     const fetchOrganization = async () => {
       try {
-        const result = await organization.getFullOrganization({
+        const result = await authClient.organization.getFullOrganization({
           query: {
             organizationId: orgId,
           },
@@ -45,12 +47,22 @@ export default function OrganizationDetailPage() {
           setOrg(result.data as any)
 
           // Get user's role in this organization
-          const listResult = await organization.list()
+          const listResult = await authClient.organization.list()
           if (listResult.data) {
             const userOrg = (listResult.data as any[]).find((o: any) => o.id === orgId)
             if (userOrg) {
               setUserRole(userOrg.role)
             }
+          }
+
+          // Fetch teams count
+          const teamsResult = await authClient.organization.listTeams({
+            query: {
+              organizationId: orgId,
+            },
+          })
+          if (teamsResult.data) {
+            setTeamsCount((teamsResult.data as any[]).length)
           }
         }
       } catch (error) {
@@ -124,10 +136,14 @@ export default function OrganizationDetailPage() {
               </div>
             )}
 
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-4 sm:grid-cols-3">
               <div>
                 <h3 className="text-sm font-medium text-muted-foreground mb-1">{t('members')}</h3>
                 <p className="text-2xl font-bold">{org.members?.length || 0}</p>
+              </div>
+              <div>
+                <h3 className="text-sm font-medium text-muted-foreground mb-1">Teams</h3>
+                <p className="text-2xl font-bold">{teamsCount}</p>
               </div>
               <div>
                 <h3 className="text-sm font-medium text-muted-foreground mb-1">{t('created')}</h3>
@@ -137,7 +153,7 @@ export default function OrganizationDetailPage() {
           </CardContent>
         </Card>
 
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <Link href={`/organizations/${orgId}/members`}>
             <Card className="hover:bg-muted/50 transition-colors cursor-pointer h-full">
               <CardContent className="flex items-center p-6">
@@ -145,6 +161,19 @@ export default function OrganizationDetailPage() {
                   <p className="font-medium">{t('members')}</p>
                   <p className="text-xs text-muted-foreground">
                     {t('manageMembers')}
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link href={`/organizations/${orgId}/teams`}>
+            <Card className="hover:bg-muted/50 transition-colors cursor-pointer h-full">
+              <CardContent className="flex items-center p-6">
+                <div className="flex-1">
+                  <p className="font-medium">Teams</p>
+                  <p className="text-xs text-muted-foreground">
+                    Manage teams and assignments
                   </p>
                 </div>
               </CardContent>

@@ -1,6 +1,6 @@
 "use client"
 
-import { useSession, signOut } from "@/lib/auth-client"
+import { authClient } from "@/lib/auth-client"
 import { useRouter } from "next/navigation"
 import {
   DropdownMenu,
@@ -14,7 +14,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { User, Settings, LogOut } from "lucide-react"
 
 export function UserMenu() {
-  const { data: session } = useSession()
+  const { data: session } = authClient.useSession()
   const router = useRouter()
 
   if (!session?.user) {
@@ -22,7 +22,7 @@ export function UserMenu() {
   }
 
   const handleSignOut = async () => {
-    await signOut()
+    await authClient.signOut()
     router.push("/login")
     router.refresh()
   }

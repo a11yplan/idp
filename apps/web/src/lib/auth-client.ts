@@ -5,13 +5,22 @@ import { magicLinkClient, organizationClient, adminClient } from 'better-auth/cl
 
 /**
  * Better Auth client instance for React
- * Use this in your client components to interact with authentication
+ *
+ * ALWAYS use this client directly with its official API:
+ * - authClient.signIn.email({ email, password })
+ * - authClient.useSession()
+ * - authClient.organization.create({ ... })
+ * - authClient.organization.createTeam({ ... })
+ * - authClient.admin.impersonateUser({ ... })
+ *
+ * DO NOT destructure or re-export methods as it breaks type safety
+ * and creates inconsistent usage patterns across the application.
  *
  * Note: Autumn billing integration is handled through <AutumnProvider>
  * wrapper in layout.tsx, not through Better Auth client plugins
  *
  * IMPORTANT: This baseURL must match the betterAuthUrl passed to AutumnProvider
- * to ensure proper integration between Better Auth and Autumn.js
+ * to ensure proper integration between Better Auth and Autumn.js.
  */
 export const authClient = createAuthClient({
   baseURL: typeof window !== 'undefined'
@@ -20,32 +29,13 @@ export const authClient = createAuthClient({
 
   plugins: [
     magicLinkClient(),
-    organizationClient(),
+    organizationClient(
+      {
+        teams: {
+          enabled: true,
+        }
+      }
+    ),
     adminClient(),
   ],
 })
-
-/**
- * Export all auth methods for convenience
- */
-export const {
-  signIn,
-  signUp,
-  signOut,
-  useSession,
-  updateUser,
-  changePassword,
-  sendVerificationEmail,
-  changeEmail,
-  deleteUser,
-} = authClient
-
-/**
- * Export organization methods
- */
-export const organization = authClient.organization
-
-/**
- * Export admin methods
- */
-export const admin = authClient.admin

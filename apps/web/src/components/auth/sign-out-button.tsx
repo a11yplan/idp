@@ -1,6 +1,6 @@
 "use client"
 
-import { signOut } from "@/lib/auth-client"
+import { authClient } from "@/lib/auth-client"
 import { Button } from "@/components/ui/button"
 import type { ButtonProps } from "@/components/ui/button"
 
@@ -14,7 +14,7 @@ interface SignOutButtonProps extends ButtonProps {
  */
 export function SignOutButton({ children, ...props }: SignOutButtonProps) {
   return (
-    <Button onClick={() => signOut()} {...props}>
+    <Button onClick={() => authClient.signOut()} {...props}>
       {children}
     </Button>
   )

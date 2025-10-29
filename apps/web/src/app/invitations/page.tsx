@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { organization, useSession } from "@/lib/auth-client"
+import { authClient } from "@/lib/auth-client"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -36,7 +36,7 @@ interface Invitation {
 
 export default function InvitationsPage() {
   const router = useRouter()
-  const { data: session } = useSession()
+  const { data: session } = authClient.useSession()
   const [invitations, setInvitations] = useState<Invitation[]>([])
   const [loading, setLoading] = useState(true)
   const [actionLoading, setActionLoading] = useState<string | null>(null)
@@ -51,7 +51,7 @@ export default function InvitationsPage() {
     console.log('📧 [Invitations] Fetching user invitations...')
 
     try {
-      const result = await organization.listUserInvitations()
+      const result = await authClient.organization.listUserInvitations()
 
       console.log('📧 [Invitations] List result:', result)
 
@@ -87,7 +87,7 @@ export default function InvitationsPage() {
 
     setActionLoading(invitationId)
     try {
-      const result = await organization.acceptInvitation({
+      const result = await authClient.organization.acceptInvitation({
         invitationId,
       })
 
@@ -120,7 +120,7 @@ export default function InvitationsPage() {
 
     setActionLoading(invitationId)
     try {
-      const result = await organization.rejectInvitation({
+      const result = await authClient.organization.rejectInvitation({
         invitationId,
       })
 

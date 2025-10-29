@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useTranslations } from "next-intl"
 import Link from "next/link"
-import { signIn, useSession } from "@/lib/auth-client"
+import { authClient } from "@/lib/auth-client"
 import { AuthLayout } from "@/components/layouts/auth-layout"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -20,7 +20,7 @@ export default function LoginPage() {
   const tCommon = useTranslations('common')
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { data: session } = useSession()
+  const { data: session } = authClient.useSession()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
@@ -50,7 +50,7 @@ export default function LoginPage() {
     setSuccess("")
 
     try {
-      const result = await signIn.email({
+      const result = await authClient.signIn.email({
         email,
         password,
       })
@@ -80,7 +80,7 @@ export default function LoginPage() {
     setSuccess("")
 
     try {
-      const result = await signIn.magicLink({
+      const result = await authClient.signIn.magicLink({
         email,
       })
 

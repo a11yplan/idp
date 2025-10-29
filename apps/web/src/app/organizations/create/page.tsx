@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useTranslations } from "next-intl"
-import { organization } from "@/lib/auth-client"
+import { authClient } from "@/lib/auth-client"
 import { BackButton } from "@/components/navigation/back-button"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -45,7 +45,7 @@ export default function CreateOrganizationPage() {
     setError("")
 
     try {
-      const result = await organization.create({
+      const result = await authClient.organization.create({
         name,
         slug,
         metadata: description ? { description } : undefined,

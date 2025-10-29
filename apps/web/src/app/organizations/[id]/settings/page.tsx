@@ -2,7 +2,7 @@
 
 
 import { useEffect, useState } from "react"
-import { organization, useSession, authClient } from "@/lib/auth-client"
+import { authClient } from "@/lib/auth-client"
 import { useParams, useRouter } from "next/navigation"
 import { BackButton } from "@/components/navigation/back-button"
 import { Button } from "@/components/ui/button"
@@ -34,7 +34,7 @@ export const dynamic = 'force-dynamic'
 export default function OrganizationSettingsPage() {
   const params = useParams()
   const router = useRouter()
-  const { data: session } = useSession()
+  const { data: session } = authClient.useSession()
   const orgId = params.id as string
 
   const [name, setName] = useState("")
@@ -64,7 +64,7 @@ export default function OrganizationSettingsPage() {
   useEffect(() => {
     const fetchOrganization = async () => {
       try {
-        const result = await organization.getFullOrganization({
+        const result = await authClient.organization.getFullOrganization({
           query: {
             organizationId: orgId,
           },
@@ -78,7 +78,7 @@ export default function OrganizationSettingsPage() {
         }
 
         // Get user's role
-        const listResult = await organization.list()
+        const listResult = await authClient.organization.list()
         if (listResult.data) {
           const userOrg = (listResult.data as any[]).find((o: any) => o.id === orgId)
           if (userOrg) {
@@ -120,7 +120,7 @@ export default function OrganizationSettingsPage() {
     setSuccess("")
 
     try {
-      const result = await organization.update({
+      const result = await authClient.organization.update({
         organizationId: orgId,
         data: {
           name,
@@ -148,7 +148,7 @@ export default function OrganizationSettingsPage() {
 
     setDeleteLoading(true)
     try {
-      await organization.delete({
+      await authClient.organization.delete({
         organizationId: orgId,
       })
       router.push("/organizations")
@@ -163,7 +163,7 @@ export default function OrganizationSettingsPage() {
     setLeaveLoading(true)
     try {
       // Correct method: organization.leave with explicit organizationId
-      await organization.leave({
+      await authClient.organization.leave({
         organizationId: orgId,
       })
       router.push("/organizations")
@@ -187,7 +187,7 @@ export default function OrganizationSettingsPage() {
       // We need to: 1) Set new user as owner, 2) Demote current owner to admin
 
       // Step 1: Promote new user to owner
-      const promoteResult = await organization.updateMemberRole({
+      const promoteResult = await authClient.organization.updateMemberRole({
         organizationId: orgId,
         memberId: transferUserId,
         role: "owner",
@@ -198,7 +198,7 @@ export default function OrganizationSettingsPage() {
       }
 
       // Step 2: Demote current owner to admin (using session user ID)
-      const demoteResult = await organization.updateMemberRole({
+      const demoteResult = await authClient.organization.updateMemberRole({
         organizationId: orgId,
         memberId: session?.user?.id || "",
         role: "admin",
@@ -206,7 +206,7 @@ export default function OrganizationSettingsPage() {
 
       if (demoteResult.error) {
         // Try to revert the promotion
-        await organization.updateMemberRole({
+        await authClient.organization.updateMemberRole({
           organizationId: orgId,
           memberId: transferUserId,
           role: "admin", // revert to previous role

@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { organization } from "@/lib/auth-client"
+import { authClient } from "@/lib/auth-client"
 import {
   Select,
   SelectContent,
@@ -35,7 +35,7 @@ export function OrganizationSwitcher() {
 
   const fetchOrganizations = async () => {
     try {
-      const result = await organization.list()
+      const result = await authClient.organization.list()
       if (result.data) {
         const orgs = result.data as any[]
         setOrganizations(orgs)
@@ -71,7 +71,7 @@ export function OrganizationSwitcher() {
       setActiveOrgId(orgId)
 
       // Sync with server-side session
-      await organization.setActive({ organizationId: orgId })
+      await authClient.organization.setActive({ organizationId: orgId })
 
       // Refresh the page to update organization context
       router.refresh()

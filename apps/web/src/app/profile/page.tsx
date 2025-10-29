@@ -1,6 +1,6 @@
 "use client"
 
-import { useSession } from "@/lib/auth-client"
+import { authClient } from "@/lib/auth-client"
 import { useTranslations } from "next-intl"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -15,7 +15,7 @@ export const dynamic = 'force-dynamic'
 export default function ProfilePage() {
   const t = useTranslations('profile')
   const tAuth = useTranslations('auth')
-  const { data: session, isPending } = useSession()
+  const { data: session, isPending } = authClient.useSession()
 
   if (isPending) {
     return (
