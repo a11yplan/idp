@@ -75,7 +75,7 @@ export function Navbar() {
         <div className="flex h-16 items-center justify-between">
           {/* Logo / Brand */}
           <div className="flex items-center gap-6">
-            <AppLogo size="sm" showName linkToHome />
+            <AppLogo size="sm" linkToHome />
 
             {/* Desktop Navigation - Only show for admin users */}
             {isBetterAdmin && (

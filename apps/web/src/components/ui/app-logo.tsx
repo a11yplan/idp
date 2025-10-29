@@ -15,15 +15,15 @@ interface AppLogoProps {
 }
 
 const sizeMap = {
-  sm: { icon: 'h-8 w-8', text: 'text-lg', wrapper: 'gap-2' },
-  md: { icon: 'h-16 w-16', text: 'text-3xl', wrapper: 'gap-3' },
-  lg: { icon: 'h-32 w-32', text: 'text-6xl', wrapper: 'gap-4' },
+  sm: { icon: 'h-8 w-16', text: 'text-lg', wrapper: 'gap-2' },
+  md: { icon: 'h-16 w-32', text: 'text-3xl', wrapper: 'gap-3' },
+  lg: { icon: 'h-32 w-64', text: 'text-6xl', wrapper: 'gap-4' },
 }
 
 const sizePixels = {
-  sm: 32,
-  md: 64,
-  lg: 128,
+  sm: { width: 64, height: 32 },
+  md: { width: 128, height: 64 },
+  lg: { width: 256, height: 128 },
 }
 
 /**
@@ -46,8 +46,8 @@ export function AppLogo({
         <Image
           src={config.appLogo}
           alt={config.appName}
-          width={pixelSize}
-          height={pixelSize}
+          width={pixelSize.width}
+          height={pixelSize.height}
           className={icon}
         />
       ) : (

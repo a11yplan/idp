@@ -40,7 +40,7 @@ export default async function Home() {
         <div className="w-full max-w-md space-y-8">
           {/* App Logo - Consistent with login/signup pages */}
           <div className="flex justify-center">
-            <AppLogo size="md" showName />
+            <AppLogo size="md" />
           </div>
 
           {/* Content Card */}
