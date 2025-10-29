@@ -1,5 +1,5 @@
 import { betterAuth } from 'better-auth'
-import { magicLink, organization, admin, jwt, customSession } from 'better-auth/plugins'
+import { magicLink, organization, admin, jwt, customSession, username } from 'better-auth/plugins'
 import { autumn } from 'autumn-js/better-auth'
 
 import { Pool } from 'pg'
@@ -44,6 +44,12 @@ const allowedDomains = process.env.IDP_ALLOWED_DOMAINS ? process.env.IDP_ALLOWED
   }
   return trimmed
 }) : []
+
+/**
+ * Enable username/password authentication
+ * Disabled by default, can be enabled via ENABLE_USERNAME_AUTH=true
+ */
+const enableUsernameAuth = process.env.ENABLE_USERNAME_AUTH === 'true'
 /**
  * Better Auth instance
  */
@@ -95,6 +101,8 @@ export const auth = betterAuth({
 
   // Plugins
   plugins: [
+    // Conditionally enable username authentication
+    ...(enableUsernameAuth ? [username()] : []),
     customSession(async ({ user, session }) => {
 
       let activeOrganization = null
