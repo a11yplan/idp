@@ -1,7 +1,7 @@
 import { headers } from "next/headers"
 import { redirect } from "next/navigation"
 import { auth } from "@/lib/auth"
-import { useTranslations } from "next-intl"
+import { getTranslations } from "next-intl/server"
 import Link from "next/link"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { canAccessAdmin } from "@/lib/rbac"
@@ -29,7 +29,8 @@ export default async function AdminDashboardPage() {
     // Continue with 0 count on error
   }
 
-  const t = useTranslations('admin')
+  // Use server-side translations API for async server components
+  const t = await getTranslations('admin')
 
   return (
     <div className="min-h-screen bg-gray-50">

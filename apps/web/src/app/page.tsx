@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { useTranslations } from "next-intl"
+import { getTranslations } from "next-intl/server"
 import { headers } from "next/headers"
 import { redirect } from "next/navigation"
 import { auth } from "@/lib/auth"
@@ -23,9 +23,10 @@ export default async function Home() {
     redirect('/login')
   }
 
-  const t = useTranslations('home')
-  const tCommon = useTranslations('common')
-  const tAuth = useTranslations('auth')
+  // Use server-side translations API for async server components
+  const t = await getTranslations('home')
+  const tCommon = await getTranslations('common')
+  const tAuth = await getTranslations('auth')
 
   const isAdmin = canAccessAdmin(session.user)
   const isBetterAdmin = isBetterAuthAdmin(session.user)
