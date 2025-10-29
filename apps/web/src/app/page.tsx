@@ -36,17 +36,21 @@ export default async function Home() {
   // Simplified view for non-admin users
   if (!isBetterAdmin) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-        <Card className="w-full max-w-md">
-          <CardHeader className="space-y-4">
-            <div className="flex justify-center">
-              <AppLogo size="md" showName />
-            </div>
-            <CardTitle className="text-2xl text-center">
-              {t('welcomeBack', { name: displayName })}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-12">
+        <div className="w-full max-w-md space-y-8">
+          {/* App Logo - Consistent with login/signup pages */}
+          <div className="flex justify-center">
+            <AppLogo size="md" showName />
+          </div>
+
+          {/* Content Card */}
+          <Card className="w-full">
+            <CardHeader>
+              <CardTitle className="text-2xl text-center">
+                {t('welcomeBack', { name: displayName })}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
             {/* User Information */}
             <div className="space-y-4">
               <div className="flex items-center justify-between border-b pb-3">
@@ -68,6 +72,7 @@ export default async function Home() {
             </SignOutButton>
           </CardContent>
         </Card>
+        </div>
       </div>
     )
   }
