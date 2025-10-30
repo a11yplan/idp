@@ -60,7 +60,16 @@
     "emailVerified": "E-Mail verifiziert",
     "emailNotVerified": "Nicht verifiziert",
     "verified": "Verifiziert",
-    "notVerified": "Nicht verifiziert"
+    "notVerified": "Nicht verifiziert",
+    "otp": "Einmalcode",
+    "otpCode": "Verifizierungscode",
+    "sendOTP": "Code senden",
+    "verifyOTP": "Verifizieren & Anmelden",
+    "otpSent": "Code gesendet! Prüfe deine E-Mail.",
+    "enterOTP": "Gib den 6-stelligen Code ein",
+    "resendOTP": "Code erneut senden",
+    "otpInvalid": "Ungültiger Code. Bitte erneut versuchen.",
+    "sendingOTP": "Code wird gesendet..."
   },
   "home": {
     "title": "Startseite",

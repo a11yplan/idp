@@ -10,7 +10,7 @@ export const EmailButton = ({ href, children }: EmailButtonProps) => {
   return (
     <Section style={styles.buttonContainer}>
       <Button href={href} style={styles.button}>
-        {children}
+        {children as any}
       </Button>
     </Section>
   );

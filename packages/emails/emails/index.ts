@@ -6,6 +6,9 @@
 export { MagicLinkEmail } from './auth/magic-link'
 export type { MagicLinkEmailProps } from './auth/magic-link'
 
+export { OtpEmail } from './auth/otp'
+export type { OtpEmailProps } from './auth/otp'
+
 export { ResetPasswordEmail } from './auth/reset-password'
 export type { ResetPasswordEmailProps } from './auth/reset-password'
 

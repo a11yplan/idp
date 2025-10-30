@@ -1,7 +1,7 @@
 "use client"
 
 import { createAuthClient } from 'better-auth/react'
-import { magicLinkClient, organizationClient, adminClient } from 'better-auth/client/plugins'
+import { magicLinkClient, emailOTPClient, organizationClient, adminClient } from 'better-auth/client/plugins'
 
 /**
  * Better Auth client instance for React
@@ -29,6 +29,7 @@ export const authClient = createAuthClient({
 
   plugins: [
     magicLinkClient(),
+    emailOTPClient(),
     organizationClient(
       {
         teams: {

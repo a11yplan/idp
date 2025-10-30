@@ -2,6 +2,7 @@ import { Resend } from 'resend'
 import { render } from '@react-email/render'
 import {
   MagicLinkEmail,
+  OtpEmail,
   ResetPasswordEmail,
   ConfirmationEmail,
   InviteEmail,
@@ -165,6 +166,65 @@ export async function sendMagicLinkEmail(params: {
     return { success: true }
   } catch (error: any) {
     console.error('Error sending magic link email:', error)
+    return { success: false, error: error.message }
+  }
+}
+
+/**
+ * Send OTP email
+ */
+export async function sendOTPEmail(params: {
+  email: string
+  otp: string
+  type: 'sign-in' | 'email-verification' | 'forget-password'
+}): Promise<{ success: boolean; error?: string }> {
+  const { email, otp, type } = params
+  const resend = getResendClient()
+  const fromEmail = getFromEmail()
+  const locale = getLocale()
+
+  // Development mode fallback
+  if (!resend) {
+    console.log('📧 OTP Code (Development Mode)')
+    console.log(`To: ${email}`)
+    console.log(`Type: ${type}`)
+    console.log(`OTP: ${otp}`)
+    console.log(`Locale: ${locale}`)
+    console.log('---')
+    return { success: true }
+  }
+
+  try {
+    const emailHtml = await render(
+      OtpEmail({
+        locale,
+        otp,
+        type,
+      })
+    )
+
+    const subjectMap = {
+      'sign-in': locale === 'de' ? 'Dein Anmelde-Code' : 'Your sign-in code',
+      'email-verification': locale === 'de' ? 'E-Mail verifizieren' : 'Verify your email',
+      'forget-password': locale === 'de' ? 'Passwort zurücksetzen' : 'Reset your password',
+    }
+
+    const { error } = await resend.emails.send({
+      from: fromEmail,
+      to: email,
+      subject: subjectMap[type],
+      html: emailHtml,
+    })
+
+    if (error) {
+      console.error('Failed to send OTP email:', error)
+      return { success: false, error: error.message }
+    }
+
+    console.log(`✅ OTP email sent to ${email}`)
+    return { success: true }
+  } catch (error: any) {
+    console.error('Error sending OTP email:', error)
     return { success: false, error: error.message }
   }
 }

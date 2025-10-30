@@ -1,11 +1,12 @@
 import { betterAuth } from 'better-auth'
-import { magicLink, organization, admin, jwt, customSession, username } from 'better-auth/plugins'
+import { magicLink, emailOTP, organization, admin, jwt, customSession, username } from 'better-auth/plugins'
 import { autumn } from 'autumn-js/better-auth'
 
 import { Pool } from 'pg'
 import {
   sendVerificationEmail,
   sendMagicLinkEmail,
+  sendOTPEmail,
   sendPasswordResetEmail,
   sendOrganizationInvitationEmail,
 } from './email'
@@ -104,56 +105,12 @@ export const auth = betterAuth({
     // Conditionally enable username authentication
     ...(enableUsernameAuth ? [username()] : []),
     customSession(async ({ user, session }) => {
+      // TODO: Implement active organization/team selection logic
+      // This could be based on user preferences stored in the database
+      // or the most recently accessed organization/team
 
-      let activeOrganization = null
-      let activeTeam = null
-
-
-
-      // Fetch active organization details if set
-      if (session.activeOrganizationId) {
-        try {
-          const result = await pool.query(
-            'SELECT id, name, slug, logo FROM organization WHERE id = $1',
-            [session.activeOrganizationId]
-          )
-
-          if (result.rows[0]) {
-            const org = result.rows[0]
-            activeOrganization = {
-              id: org.id,
-              name: org.name,
-              slug: org.slug,
-              logo: org.logo,
-            }
-          }
-        } catch (error) {
-          console.error('Failed to fetch active organization:', error)
-        }
-      }
-
-
-      // Fetch active team details if set
-      if (session.activeTeamId) {
-        try {
-          const result = await pool.query(
-            'SELECT id, name, "organizationId" FROM team WHERE id = $1',
-            [session.activeTeamId]
-          )
-
-          if (result.rows[0]) {
-            const team = result.rows[0]
-            activeTeam = {
-              id: team.id,
-              name: team.name,
-              organizationId: team.organizationId,
-            }
-          }
-        } catch (error) {
-          console.error('Failed to fetch active team:', error)
-        }
-      }
-
+      const activeOrganization = null
+      const activeTeam = null
 
       return {
         user: user,
@@ -187,7 +144,18 @@ export const auth = betterAuth({
           token,
         })
       },
-      expiresIn: 60 * 60, // 10 minutes
+      expiresIn: 60 * 60, // 1 hour
+    }),
+    emailOTP({
+      sendVerificationOTP: async ({ email, otp, type }) => {
+        await sendOTPEmail({
+          email,
+          otp,
+          type,
+        })
+      },
+      expiresIn: 60 * 10, // 10 minutes
+      otpLength: 6, // 6-digit OTP code
     }),
     organization({
       // Organization configuration

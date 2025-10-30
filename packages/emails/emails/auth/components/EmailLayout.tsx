@@ -8,10 +8,11 @@ import {
   Img,
   Text,
 } from '@react-email/components';
+import { ReactNode } from 'react';
 import * as styles from '../styles';
 
 export interface EmailLayoutProps {
-  children: React.ReactNode;
+  children: ReactNode;
   previewText: string;
   locale: 'en' | 'de';
 }

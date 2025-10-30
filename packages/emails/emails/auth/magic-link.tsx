@@ -1,7 +1,6 @@
 import { Heading, Text } from '@react-email/components';
 import { EmailLayout } from './components/EmailLayout';
 import { EmailButton } from './components/EmailButton';
-import { OtpCode } from './components/OtpCode';
 import * as styles from './styles';
 
 export interface MagicLinkEmailProps {
@@ -15,20 +14,18 @@ const content = {
   en: {
     preview: 'Your login link',
     heading: 'Your Login Link',
-    body: 'Click the button below to sign in. This link expires in 24 hours.',
+    body: 'Click the button below to sign in. This link expires in 1 hour.',
     button: 'Sign In',
-    otpLabel: 'Or use this code:',
     footer: "If you didn't request this login, you can ignore this email.",
-    fallbackLabel: "If the button doesn't work:",
+    fallbackLabel: "If the button doesn't work, copy and paste this link:",
   },
   de: {
     preview: 'Dein Login-Link',
     heading: 'Dein Login-Link',
-    body: 'Klick auf den Button, um dich anzumelden. Der Link ist 24 Stunden gültig.',
+    body: 'Klick auf den Button, um dich anzumelden. Der Link ist 1 Stunde gültig.',
     button: 'Anmelden',
-    otpLabel: 'Alternativ diesen Code verwenden:',
     footer: 'Falls du keine Anmeldung angefordert hast, kannst du diese E-Mail ignorieren.',
-    fallbackLabel: 'Falls der Button nicht funktioniert:',
+    fallbackLabel: 'Falls der Button nicht funktioniert, kopiere diesen Link:',
   },
 };
 
@@ -39,7 +36,7 @@ export const MagicLinkEmail = ({
   token,
 }: MagicLinkEmailProps) => {
   const t = content[locale];
-  const loginUrl = `${siteUrl}/login?token=${tokenHash}`;
+  const loginUrl = `${siteUrl}/api/auth/magic-link/verify?token=${tokenHash}&callbackURL=/`;
 
   return (
     <EmailLayout previewText={t.preview} locale={locale}>
@@ -50,8 +47,6 @@ export const MagicLinkEmail = ({
       <EmailButton href={loginUrl}>
         {t.button}
       </EmailButton>
-
-      <OtpCode code={token} label={t.otpLabel} />
 
       <Text style={styles.text}>{t.footer}</Text>
 

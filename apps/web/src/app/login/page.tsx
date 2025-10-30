@@ -27,6 +27,10 @@ export default function LoginPage() {
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
   const [callbackURL, setCallbackURL] = useState<string | null>(null)
+  // OTP state
+  const [otpCode, setOtpCode] = useState("")
+  const [otpSent, setOtpSent] = useState(false)
+  const [otpEmail, setOtpEmail] = useState("")
 
   // Redirect to home if already logged in
   useEffect(() => {
@@ -96,6 +100,69 @@ export default function LoginPage() {
     }
   }
 
+  const handleSendOTP = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setError("")
+    setSuccess("")
+
+    try {
+      const result = await authClient.emailOtp.sendVerificationOtp({
+        email,
+        type: "sign-in",
+      })
+
+      if (result.error) {
+        setError(result.error.message || t('signInError'))
+      } else {
+        setOtpSent(true)
+        setOtpEmail(email)
+        setSuccess(t('otpSent'))
+      }
+    } catch (e: any) {
+      setError(e.message || t('signInError'))
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleVerifyOTP = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setError("")
+    setSuccess("")
+
+    try {
+      const result = await authClient.signIn.emailOtp({
+        email: otpEmail,
+        otp: otpCode,
+      })
+
+      if (result.error) {
+        setError(result.error.message || t('otpInvalid'))
+      } else {
+        setSuccess(t('signInSuccess'))
+        if (callbackURL) {
+          window.location.href = callbackURL
+        } else {
+          router.push("/")
+          router.refresh()
+        }
+      }
+    } catch (e: any) {
+      setError(e.message || t('otpInvalid'))
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleResendOTP = async () => {
+    setOtpCode("")
+    setOtpSent(false)
+    setError("")
+    setSuccess("")
+  }
+
   return (
     <AuthLayout>
       <Card className="w-full">
@@ -107,9 +174,10 @@ export default function LoginPage() {
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="password" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="password">{t('password')}</TabsTrigger>
               <TabsTrigger value="magic">{t('magicLink')}</TabsTrigger>
+              <TabsTrigger value="otp">{t('otp')}</TabsTrigger>
             </TabsList>
 
             <TabsContent value="password">
@@ -185,6 +253,85 @@ export default function LoginPage() {
                   {loading ? t('sendingLink') : t('sendMagicLink')}
                 </Button>
               </form>
+            </TabsContent>
+
+            <TabsContent value="otp">
+              {!otpSent ? (
+                <form onSubmit={handleSendOTP} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="email-otp">{t('email')}</Label>
+                    <Input
+                      id="email-otp"
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      placeholder={t('email')}
+                    />
+                  </div>
+
+                  {error && (
+                    <Alert variant="destructive">
+                      <AlertDescription>{error}</AlertDescription>
+                    </Alert>
+                  )}
+
+                  {success && (
+                    <Alert>
+                      <AlertDescription>{success}</AlertDescription>
+                    </Alert>
+                  )}
+
+                  <Button type="submit" className="w-full" disabled={loading}>
+                    {loading ? t('sendingOTP') : t('sendOTP')}
+                  </Button>
+                </form>
+              ) : (
+                <form onSubmit={handleVerifyOTP} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="otp-code">{t('otpCode')}</Label>
+                    <Input
+                      id="otp-code"
+                      type="text"
+                      value={otpCode}
+                      onChange={(e) => setOtpCode(e.target.value)}
+                      required
+                      placeholder={t('enterOTP')}
+                      maxLength={6}
+                      pattern="[0-9]{6}"
+                    />
+                    <p className="text-sm text-muted-foreground">
+                      {t('otpSent')} ({otpEmail})
+                    </p>
+                  </div>
+
+                  {error && (
+                    <Alert variant="destructive">
+                      <AlertDescription>{error}</AlertDescription>
+                    </Alert>
+                  )}
+
+                  {success && (
+                    <Alert>
+                      <AlertDescription>{success}</AlertDescription>
+                    </Alert>
+                  )}
+
+                  <Button type="submit" className="w-full" disabled={loading}>
+                    {loading ? t('signingIn') : t('verifyOTP')}
+                  </Button>
+
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    className="w-full"
+                    onClick={handleResendOTP}
+                    disabled={loading}
+                  >
+                    {t('resendOTP')}
+                  </Button>
+                </form>
+              )}
             </TabsContent>
           </Tabs>
         </CardContent>
