@@ -14,12 +14,12 @@ export interface User {
 }
 
 /**
- * Get admin user IDs from environment variable
+ * Get admin user IDs from Better Auth config
+ * These are hardcoded in auth.ts adminUserIds array
  */
-function getAdminUserIds(): string[] {
-  const adminIds = process.env.NEXT_PUBLIC_ADMIN_USER_IDS || ''
-  return adminIds.split(',').map(id => id.trim()).filter(Boolean)
-}
+const ADMIN_USER_IDS = [
+  "bdb9cd34-3e07-4a15-808b-0bf9cdaa3670"
+]
 
 /**
  * Check if user is a Better Auth admin
@@ -32,16 +32,20 @@ export function isBetterAuthAdmin(user?: User | null): boolean {
   if (user.role === 'admin') return true
 
   // Check if user ID is in adminUserIds
-  const adminUserIds = getAdminUserIds()
-  return adminUserIds.includes(user.id)
+  return ADMIN_USER_IDS.includes(user.id)
 }
 
 /**
- * Check if user has admin access (owner or admin role)
+ * Check if user has admin access (owner, admin role, OR in adminUserIds)
  */
 export function canAccessAdmin(user?: User | null): boolean {
   if (!user) return false
-  return user.role === 'admin' || user.role === 'owner'
+
+  // Check roles
+  if (user.role === 'admin' || user.role === 'owner') return true
+
+  // Check adminUserIds list (from Better Auth config)
+  return ADMIN_USER_IDS.includes(user.id)
 }
 
 /**

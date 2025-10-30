@@ -81,9 +81,18 @@ export function AdminUsersTable({ initialUsers, currentUserId }: AdminUsersTable
 
   const handleImpersonateUser = async (userId: string) => {
     try {
-      await authClient.admin.impersonateUser({ userId })
+      console.log('[Impersonate] Starting impersonation for user:', userId)
+      const result = await authClient.admin.impersonateUser({ userId })
+      console.log('[Impersonate] Result:', result)
+
+      // Force session refresh before redirect
+      const newSession = await authClient.getSession()
+      console.log('[Impersonate] New session:', newSession)
+
+      // Full page reload to ensure session updates
       window.location.href = "/"
     } catch (error: any) {
+      console.error('[Impersonate] Error:', error)
       alert(error.message || "Failed to impersonate user")
     }
   }

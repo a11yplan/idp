@@ -37,12 +37,16 @@ export default async function AdminUserDetailPage({ params }: { params: Promise<
   let user: User | null = null
   try {
     const result = await auth.api.listUsers({
-      query: {}
+      headers: await headers(),
+      query: {
+        limit: 1000
+      }
     })
     const users = result?.users as User[]
     user = users?.find((u) => u.id === userId) || null
   } catch (error) {
     console.error('[Admin User Detail] Failed to fetch user:', error)
+    console.error('Error details:', error)
   }
 
   if (!user) {

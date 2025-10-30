@@ -42,11 +42,20 @@ export function ImpersonationBanner() {
   // Check if current session is an impersonation session
   // The session.impersonatedBy field contains the admin user ID who started impersonation
   const sessionWithImpersonation = session as SessionWithImpersonation
+
+  // Debug logging - TODO: Remove after fixing
+  console.log('[ImpersonationBanner] Full session:', JSON.stringify(session, null, 2))
+  console.log('[ImpersonationBanner] impersonatedBy field:', sessionWithImpersonation.impersonatedBy)
+  console.log('[ImpersonationBanner] Session keys:', Object.keys(session))
+
   const isImpersonating = !!sessionWithImpersonation.impersonatedBy
 
   if (!isImpersonating) {
+    console.log('[ImpersonationBanner] Not impersonating - banner hidden')
     return null
   }
+
+  console.log('[ImpersonationBanner] IMPERSONATING - showing banner')
 
   const handleStopImpersonation = async () => {
     setIsStoppingImpersonation(true)

@@ -90,14 +90,22 @@
 /*
  * Theme Customization Guide:
  *
- * Colors can be customized via environment variables:
- * - NEXT_PUBLIC_PRIMARY_COLOR="hsl(262 83% 58%)"    // Main brand color
- * - NEXT_PUBLIC_SECONDARY_COLOR="hsl(0 0% 96.1%)"  // Secondary color
- * - NEXT_PUBLIC_ACCENT_COLOR="hsl(0 0% 96.1%)"     // Accent color
+ * Colors can be customized via environment variables in .env.local:
+ * - NEXT_PUBLIC_PRIMARY_COLOR="hsl(26 90% 58%)"    // Main brand color
+ * - NEXT_PUBLIC_SECONDARY_COLOR="hsl(0 0% 1.1%)"  // Secondary color
+ * - NEXT_PUBLIC_ACCENT_COLOR="hsl(0 0% 1.1%)"     // Accent color
  *
- * For runtime color customization, update the CSS custom properties
- * in your component or via JavaScript.
+ * The ThemeProvider component (src/components/providers/theme-provider.tsx)
+ * automatically reads these environment variables and applies them to CSS
+ * custom properties at runtime.
  *
- * Note: Current implementation uses static CSS. For full runtime theming,
- * implement a theme provider that injects custom properties based on config.
+ * Format: Use HSL values with or without the hsl() wrapper:
+ * - "hsl(26 90% 58%)" or "26 90% 58%" both work
+ * - Values should be: hue (0-360) saturation (0-100%) lightness (0-100%)
+ *
+ * The values above are applied to these CSS custom properties:
+ * - --primary (from NEXT_PUBLIC_PRIMARY_COLOR)
+ * - --secondary (from NEXT_PUBLIC_SECONDARY_COLOR)
+ * - --accent (from NEXT_PUBLIC_ACCENT_COLOR)
+ * - --ring (automatically matches primary color)
  */

@@ -5,6 +5,7 @@ import "./globals.css";
 import { ClientLayout } from "@/components/layout/client-layout";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { IntlErrorHandlerProvider } from "@/components/providers/intl-error-handler-provider";
+import { ThemeProvider } from "@/components/providers/theme-provider";
 import { config } from "@/lib/config";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -35,13 +36,15 @@ export default async function RootLayout({
         <link rel="icon" href={config.appFavicon} />
       </head>
       <body className={inter.className}>
-        <ErrorBoundary>
-          <IntlErrorHandlerProvider locale={locale} messages={messages}>
-            <ClientLayout betterAuthUrl={betterAuthUrl}>
-              {children}
-            </ClientLayout>
-          </IntlErrorHandlerProvider>
-        </ErrorBoundary>
+        <ThemeProvider>
+          <ErrorBoundary>
+            <IntlErrorHandlerProvider locale={locale} messages={messages}>
+              <ClientLayout betterAuthUrl={betterAuthUrl}>
+                {children}
+              </ClientLayout>
+            </IntlErrorHandlerProvider>
+          </ErrorBoundary>
+        </ThemeProvider>
       </body>
     </html>
   );

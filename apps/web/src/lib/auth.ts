@@ -271,7 +271,7 @@ export const auth = betterAuth({
       // Admins can manage users, roles, and impersonate
       defaultRole: 'user', // Default role for new users
 
-      adminUserIds: ["bdb9cd34-3e07-4a15-808b-0bf9cdaa3670"],
+      adminUserIds: process.env.NEXT_PUBLIC_ADMIN_USER_IDS?.split(',') || [],
       // Admin permissions
       impersonationSessionDuration: 60 * 60, // 1 hour
     }),

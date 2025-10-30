@@ -31,15 +31,20 @@ export default async function AdminUsersPage() {
     redirect('/')
   }
 
-  // Fetch users server-side
+  // Fetch users server-side using admin API
   let users: User[] = []
   try {
+    // Call the admin listUsers endpoint directly
     const result = await auth.api.listUsers({
-      query: {}
+      headers: await headers(),
+      query: {
+        limit: 1000
+      }
     })
     users = (result?.users as User[]) || []
   } catch (error) {
     console.error('[Admin Users] Failed to fetch users:', error)
+    console.error('Error details:', error)
     // Continue with empty list on error
   }
 
