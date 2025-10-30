@@ -10,6 +10,7 @@ import {
   sendPasswordResetEmail,
   sendOrganizationInvitationEmail,
 } from './email'
+import { populateCustomSession } from './auth-session'
 
 /**
  * Better Auth configuration with PostgreSQL (Node.js runtime)
@@ -105,21 +106,7 @@ export const auth = betterAuth({
     // Conditionally enable username authentication
     ...(enableUsernameAuth ? [username()] : []),
     customSession(async ({ user, session }) => {
-      // TODO: Implement active organization/team selection logic
-      // This could be based on user preferences stored in the database
-      // or the most recently accessed organization/team
-
-      const activeOrganization = null
-      const activeTeam = null
-
-      return {
-        user: user,
-        session: {
-          ...session,
-          activeOrganization,
-          activeTeam,
-        }
-      }
+      return await populateCustomSession(user, session, pool)
     }),
     // convex(),
     jwt({
