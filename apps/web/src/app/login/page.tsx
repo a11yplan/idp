@@ -86,6 +86,7 @@ export default function LoginPage() {
     try {
       const result = await authClient.signIn.magicLink({
         email,
+        callbackURL: callbackURL || undefined,
       })
 
       if (result.error) {

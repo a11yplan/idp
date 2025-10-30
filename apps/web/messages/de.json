@@ -73,8 +73,9 @@
   },
   "home": {
     "title": "Startseite",
-    "welcomeBack": "Willkommen zurück, {name}!",
+    "welcomeBack": "Hallo, {name}",
     "welcomeMessage": "Willkommen zu Ihrem Dashboard",
+    "goToApp": "Zur App",
     "quickActions": "Schnellzugriffe",
     "myProfile": "Mein Profil",
     "myProfileDescription": "Profil anzeigen und bearbeiten",

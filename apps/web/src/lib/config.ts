@@ -37,6 +37,9 @@ export function getConfig(): AppConfig {
       privacy: process.env.NEXT_PUBLIC_LINK_PRIVACY,
       terms: process.env.NEXT_PUBLIC_LINK_TERMS,
     },
+
+    // App URL
+    appUrl: process.env.NEXT_PUBLIC_APP_URL,
   }
 }
 

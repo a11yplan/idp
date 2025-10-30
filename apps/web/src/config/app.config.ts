@@ -37,6 +37,9 @@ export interface AppConfig {
     privacy?: string
     terms?: string
   }
+
+  // App URL
+  appUrl?: string
 }
 
 /**
@@ -73,4 +76,7 @@ export const defaultConfig: AppConfig = {
     privacy: undefined,
     terms: undefined,
   },
+
+  // App URL
+  appUrl: undefined,
 }

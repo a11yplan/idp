@@ -73,8 +73,9 @@
   },
   "home": {
     "title": "Home",
-    "welcomeBack": "Welcome back, {name}!",
+    "welcomeBack": "Hello, {name}",
     "welcomeMessage": "Welcome to your dashboard",
+    "goToApp": "Go to App",
     "quickActions": "Quick Actions",
     "myProfile": "My Profile",
     "myProfileDescription": "View and edit your profile",
