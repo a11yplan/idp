@@ -14,6 +14,7 @@
     /* Configurable primary brand color - override via NEXT_PUBLIC_PRIMARY_COLOR */
     --primary: 262 83% 58%;  /* Default: Purple */
     --primary-foreground: 0 0% 98%;
+    --primary-hover: color-mix(in srgb, hsl(var(--primary)) 85%, black 15%);
 
     /* Secondary uses shadcn neutral grays (not configurable) */
     --secondary: 0 0% 96.1%;  /* Light gray */
@@ -52,6 +53,7 @@
     /* Configurable primary brand color for dark mode */
     --primary: 262 83% 68%;  /* Slightly lighter for dark mode */
     --primary-foreground: 0 0% 9%;
+    --primary-hover: color-mix(in srgb, hsl(var(--primary)) 90%, black 10%);
 
     /* Secondary uses shadcn neutral grays (not configurable) */
     --secondary: 0 0% 14.9%;
