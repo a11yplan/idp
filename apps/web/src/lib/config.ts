@@ -15,9 +15,8 @@ export function getConfig(): AppConfig {
     appFavicon: process.env.NEXT_PUBLIC_APP_FAVICON || defaultConfig.appFavicon,
 
     // Theme Colors
+    // Only primary color is configurable - secondary/accent use shadcn defaults
     primaryColor: process.env.NEXT_PUBLIC_PRIMARY_COLOR || defaultConfig.primaryColor,
-    secondaryColor: process.env.NEXT_PUBLIC_SECONDARY_COLOR || defaultConfig.secondaryColor,
-    accentColor: process.env.NEXT_PUBLIC_ACCENT_COLOR || defaultConfig.accentColor,
 
     // Localization
     defaultLocale: (process.env.NEXT_PUBLIC_DEFAULT_LOCALE as 'en' | 'de') || defaultConfig.defaultLocale,

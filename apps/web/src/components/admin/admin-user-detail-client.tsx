@@ -117,18 +117,15 @@ export function AdminUserDetailClient({ user: initialUser, currentUserId }: Admi
 
   const handleImpersonateUser = async () => {
     try {
-      console.log('[Impersonate] Starting impersonation for user:', user.id)
-      const result = await authClient.admin.impersonateUser({ userId: user.id })
-      console.log('[Impersonate] Result:', result)
+      await authClient.admin.impersonateUser({ userId: user.id })
 
       // Force session refresh before redirect
-      const newSession = await authClient.getSession()
-      console.log('[Impersonate] New session:', newSession)
+      await authClient.getSession()
 
       // Full page reload to ensure session updates
       window.location.href = "/"
     } catch (error: any) {
-      console.error('[Impersonate] Error:', error)
+      console.error("[Impersonation] Failed:", error)
       alert(error.message || "Failed to impersonate user")
     }
   }

@@ -20,42 +20,17 @@ function parseHSL(hslString: string): string {
 
 /**
  * ThemeProvider component
- * Applies color configuration from environment variables to CSS custom properties
+ * Applies primary brand color from environment variables to CSS custom properties
+ * Secondary and accent colors use shadcn's default neutral grays from globals.css
  */
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const root = document.documentElement
 
-    // Parse and apply primary color
+    // Parse and apply primary brand color
     const primaryColor = parseHSL(config.primaryColor)
     root.style.setProperty('--primary', primaryColor)
     root.style.setProperty('--ring', primaryColor) // Ring color matches primary
-
-    // Parse and apply secondary color
-    const secondaryColor = parseHSL(config.secondaryColor)
-    root.style.setProperty('--secondary', secondaryColor)
-
-    // Parse and apply accent color
-    const accentColor = parseHSL(config.accentColor)
-    root.style.setProperty('--accent', accentColor)
-
-    // For dark mode, we could adjust the lightness slightly
-    // This is optional - you can customize this behavior
-    const adjustForDarkMode = (hsl: string): string => {
-      const parts = hsl.split(' ')
-      if (parts.length === 3) {
-        const [h, s, l] = parts
-        const lightness = parseFloat(l)
-        // Increase lightness by 10% for dark mode if it's not already very light
-        const adjustedLightness = lightness < 80 ? Math.min(lightness + 10, 100) : lightness
-        return `${h} ${s} ${adjustedLightness}%`
-      }
-      return hsl
-    }
-
-    // Apply dark mode variants (these will only apply when .dark class is present)
-    const darkPrimary = adjustForDarkMode(primaryColor)
-    root.style.setProperty('--primary-dark', darkPrimary)
   }, [])
 
   return <>{children}</>

@@ -11,19 +11,19 @@
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 3.9%;
 
-    /* Configurable primary color - override via NEXT_PUBLIC_PRIMARY_COLOR */
+    /* Configurable primary brand color - override via NEXT_PUBLIC_PRIMARY_COLOR */
     --primary: 262 83% 58%;  /* Default: Purple */
     --primary-foreground: 0 0% 98%;
 
-    /* Configurable secondary color - override via NEXT_PUBLIC_SECONDARY_COLOR */
-    --secondary: 0 0% 96.1%;  /* Default: Light gray */
+    /* Secondary uses shadcn neutral grays (not configurable) */
+    --secondary: 0 0% 96.1%;  /* Light gray */
     --secondary-foreground: 0 0% 9%;
 
     --muted: 0 0% 96.1%;
     --muted-foreground: 0 0% 45.1%;
 
-    /* Configurable accent color - override via NEXT_PUBLIC_ACCENT_COLOR */
-    --accent: 0 0% 96.1%;  /* Default: Light gray */
+    /* Accent uses shadcn neutral grays (not configurable) */
+    --accent: 0 0% 96.1%;  /* Light gray */
     --accent-foreground: 0 0% 9%;
 
     --destructive: 0 84.2% 60.2%;
@@ -49,18 +49,18 @@
     --popover: 0 0% 3.9%;
     --popover-foreground: 0 0% 98%;
 
-    /* Configurable primary color for dark mode */
+    /* Configurable primary brand color for dark mode */
     --primary: 262 83% 68%;  /* Slightly lighter for dark mode */
     --primary-foreground: 0 0% 9%;
 
-    /* Configurable secondary color for dark mode */
+    /* Secondary uses shadcn neutral grays (not configurable) */
     --secondary: 0 0% 14.9%;
     --secondary-foreground: 0 0% 98%;
 
     --muted: 0 0% 14.9%;
     --muted-foreground: 0 0% 63.9%;
 
-    /* Configurable accent color for dark mode */
+    /* Accent uses shadcn neutral grays (not configurable) */
     --accent: 0 0% 14.9%;
     --accent-foreground: 0 0% 98%;
 
@@ -90,22 +90,21 @@
 /*
  * Theme Customization Guide:
  *
- * Colors can be customized via environment variables in .env.local:
- * - NEXT_PUBLIC_PRIMARY_COLOR="hsl(26 90% 58%)"    // Main brand color
- * - NEXT_PUBLIC_SECONDARY_COLOR="hsl(0 0% 1.1%)"  // Secondary color
- * - NEXT_PUBLIC_ACCENT_COLOR="hsl(0 0% 1.1%)"     // Accent color
+ * Primary brand color can be customized via environment variable in .env.local:
+ * - NEXT_PUBLIC_PRIMARY_COLOR="hsl(26 90% 58%)"    // Main brand color (default: purple)
  *
  * The ThemeProvider component (src/components/providers/theme-provider.tsx)
- * automatically reads these environment variables and applies them to CSS
+ * automatically reads this environment variable and applies it to CSS
  * custom properties at runtime.
  *
  * Format: Use HSL values with or without the hsl() wrapper:
  * - "hsl(26 90% 58%)" or "26 90% 58%" both work
  * - Values should be: hue (0-360) saturation (0-100%) lightness (0-100%)
  *
- * The values above are applied to these CSS custom properties:
+ * The primary color is applied to:
  * - --primary (from NEXT_PUBLIC_PRIMARY_COLOR)
- * - --secondary (from NEXT_PUBLIC_SECONDARY_COLOR)
- * - --accent (from NEXT_PUBLIC_ACCENT_COLOR)
  * - --ring (automatically matches primary color)
+ *
+ * All other colors (secondary, accent, background, border, etc.) use shadcn's
+ * carefully designed neutral grays that work automatically in both light and dark modes.
  */

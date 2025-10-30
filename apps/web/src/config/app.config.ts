@@ -15,9 +15,8 @@ export interface AppConfig {
   appFavicon: string
 
   // Theme Colors (HSL format)
+  // Only primary color is configurable - secondary/accent use shadcn defaults
   primaryColor: string
-  secondaryColor: string
-  accentColor: string
 
   // Localization
   defaultLocale: 'en' | 'de'
@@ -52,9 +51,8 @@ export const defaultConfig: AppConfig = {
   appFavicon: '/favicon.ico',
 
   // Theme Colors
+  // Only primary color is configurable - secondary/accent use shadcn neutral grays from globals.css
   primaryColor: 'hsl(262 83% 58%)', // Purple
-  secondaryColor: 'hsl(0 0% 96.1%)',
-  accentColor: 'hsl(0 0% 96.1%)',
 
   // Localization
   defaultLocale: 'en',
